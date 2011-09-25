@@ -1,0 +1,1139 @@
+# General
+SUGGESTED_RESPONSES
+    Răspunsuri sugerate:
+CASH
+    Monetar
+LEGAL_STATUS
+    Starea legală
+CARGO_SPACE
+    Spaţiu depozit
+ITEM
+    Obiect
+SHIP
+    Nava
+PRICE
+    Preţ
+BUY
+    Cumpără
+SELL
+    Vinde
+STOCK
+    Stoc
+CARGO
+    Depozit
+VID_LINK_DOWN
+    Legătura video închisă
+VID_LINK_ESTABLISHED
+    Legătura video stabilită
+VID_CONNECTING
+    Conectare...
+BOUGHT_1T_OF
+    Aţi cumpărat 1t de %commodity.
+SOLD_1T_OF
+    Aţi vândut 1t de %commodity.
+WELCOME_TO_MARKET
+    Bine aţi venit la piaţa de produse %station
+GO_BACK
+    Înapoi
+FITTING
+    "Se instalează "
+REMOVING
+    "Se înlătură "
+FIT_TO_WHICH_MOUNT
+    În ce montură de armă să se instaleze laserul?
+REMOVE_FROM_WHICH_MOUNT
+    Din ce montură de armă să se înlăture laserul?
+YOU_NOT_ENOUGH_MONEY
+    Nu aveţi destui bani
+TRADER_NOT_ENOUGH_MONEY
+    Comerciantul nu are destui bani
+NO_SPACE_ON_SHIP
+    Nu este spaţiu pe nava dumneavoastră
+SOMEWHERE_SERVICES
+    Servicii %station
+SOMEWHERE_SHIPYARD
+    Port %station
+SOMEWHERE_SHIP_REPAIRS
+    Reparaţii nave %station
+PRICE_TO_FIT
+    $ per instalare
+PRICE_TO_REMOVE
+    $ per înlăturare
+WT
+    Greutate
+FIT
+    Instalare
+REMOVE
+    Înlăturare
+BUY_THIS_SHIP
+    Cumpără nava asta
+SHIP_TYPE
+    Tipul navei
+REGISTRATION_ID
+    Id de înregistrare
+WEIGHT_EMPTY
+    Greutate goală
+NUMBER_TONNES
+    %{mass}t
+WEIGHT_FULLY_LADEN
+    Greutate incărcată la maxim
+CAPACITY
+    Capacitate
+FORWARD_ACCEL_EMPTY
+    Viteza de acceleraţie (golită)
+NUMBER_G
+    %acceleration{f.1} G
+FORWARD_ACCEL_LADEN
+    Acceleraţie inainte (încărcată)
+REVERSE_ACCEL_EMPTY
+    Acceleraţie înapoi (golită)
+REVERSE_ACCEL_LADEN
+    Acceleraţie înapoi (încărcată)
+HYPERDRIVE_FITTED
+    Motor superluminic instalat:
+HYPERSPACE_RANGE_LADEN
+    Raza de acţiune hiperspaţiu (încărcată la maxim):
+THANKS_AND_REMEMBER_TO_BUY_FUEL
+    Vă mulţumim pentru achiziţia dumneavoastră. Nu uitaţi să instalaţi echipament şi să cumparaţi combustibil înainte de a pleca.
+CLASS_NUMBER
+    Clasa %class
+NUMBER_LY
+    %distance{f.2} a.l.
+SHIP_IS_ALREADY_FULLY_REPAIRED
+    Nava dumneavoastră este în condiţie perfectă de funcţionare.
+REPAIR_1_PERCENT_HULL
+    Repară 1.0% din avarii fuzelaj
+REPAIR_ENTIRE_HULL
+    Repară toate avariile fuzelajului (%repairpercent{f.1}%%)
+REPAIR
+    Repară
+PART_EX
+    Schimb de componente
+VIEW
+    Vizionare
+SHIP_EQUIPMENT
+    Echipament navă
+SOMEWHERE_SHIP_EQUIPMENT
+    Echipament navă %station
+REPAIRS_AND_SERVICING
+    Reparaţii şi servicii
+NEW_AND_RECONDITIONED_SHIPS
+    Nave noi şi recondiţionate
+BULLETIN_BOARD
+    Avizier
+WELCOME_TO_SOMEWHERE
+    Bine aţi venit la %station
+SPACESTATION_LONG_WELCOME_MESSAGE
+    Bine aţi venit pe această staţie spaţială. Avem rapoarte de vandalism şi grafitti pe avizier. Daca observaţi ca vreun mesaj vă induce în eroare, este scris greşit sau pur şi simplu lipseşte, vă rugăm să anunţaţi un membru al personalului.\n\nOxigenul este momentan gratuit.
+REQUEST_LAUNCH
+    Solicitare lansare
+SHIPYARD
+    Port
+COMMODITIES_MARKET
+    Piaţa de produse
+SOMEWHERE_COMMODITIES_MARKET
+    Piaţa de produse %station
+SOMEWHERE_SHIP_MARKET
+    Piaţa de nave %station
+CONTACT_LOCAL_POLICE
+    Contactaţi politia locală
+COMMS_LINK
+    Conexiune comunicaţii
+ZOOM_IN
+    Focalizează
+ZOOM_OUT
+    Măreste distanţa focala
+NORMA_ARM
+    Braţul Norma
+PERSEUS_ARM
+    Braţul Perseus
+OUTER_ARM
+    Braţul exterior
+SAGITTARIUS_ARM
+    Braţul Sagittarius
+SCUTUM_CENTAURUS_ARM
+    Braţul Scutum-Centaurus
+INT_LY
+    %scale a.l.
+SEARCH
+    Caută
+
+# Config / game control
+PRESS_BUTTON_WANTED_FOR
+    "Apăsaţi butonul pe care-l doriţi pentru "
+MOVE_AXIS_WANTED_FOR
+    "Mişcaţi axa manetei pe care o doriţi pentru "
+SAVE
+    Salvează
+LOAD
+    Încarcă
+CANCEL
+    Anulare
+SELECT_FILENAME_TO_SAVE
+    Selectaţi un fişier peste care să salvaţi sau introduceţi un nou nume de fişier
+GAME_SAVED_TO
+    "Jocul salvat drept "
+SELECT_FILENAME_TO_LOAD
+    Selectaţi un fişier de încărcat
+COULD_NOT_OPEN_FILENAME
+    Nu am putut deschide %path
+GAME_LOAD_CORRUPT
+    Acest joc salvat nu poate fi încărcat deoarece conţine erori.
+GAME_LOAD_CANNOT_OPEN
+    Fişierul acestui joc salvat nu poate fi deschis din cauza lipsei permisiunilor sau ceva asemănător...
+VERY_LOW
+    Foarte mic
+LOW
+    Mic
+MEDIUM
+    Mediu
+HIGH
+    Mare
+VERY_HIGH
+    Foarte mare
+VERY_VERY_HIGH
+    Foarte foarte mare
+ON
+    Pornit
+OFF
+    Oprit
+SIGHTS_SOUNDS_SAVES
+    Vizualizări, sunete & salvări de jocuri
+PIONEER
+    PIONEER
+SAVE_THE_GAME
+    [S] Salvaţi jocul
+LOAD_A_GAME
+    [L] Încărcaţi un joc
+EXIT_THIS_GAME
+    Ieşiţi din acest joc
+WINDOW_OR_FULLSCREEN
+    Mod fereastră sau pe tot ecranul (reporniţi pentru a aplica)
+FULL_SCREEN
+    Lărgiţi pe tot ecranul
+OTHER_GRAPHICS_SETTINGS
+    Alte setări grafice
+USE_SHADERS
+    Folosire shaderi
+USE_HDR
+    Folosire lumini HDR (arată super)
+SOUND_SETTINGS
+    Setări sunet
+VOL_MASTER
+    Principal:
+VOL_EFFECTS
+    Efecte:
+VOL_MUSIC
+    Muzică:
+VIDEO_RESOLUTION
+    Rezoluţia video (reporniţi jocul pentru aplicare)
+X_BY_X
+    %{x}x%{y}
+PLANET_DETAIL_DISTANCE
+    Distanţa de detaliu planetar:
+CITY_DETAIL_LEVEL
+    Nivelul detaliului oraşelor:
+PLANET_TEXTURES
+    Texturi planetare:
+FRACTAL_DETAIL
+    Detaliu fractal:
+CONTROLS
+    Controale
+ENABLE_JOYSTICK
+    Activaţi controlul din manetă
+MOUSE_INPUT
+    Comenzi mouse
+INVERT_MOUSE_Y
+    Inversează axa Y a mouse-ului
+LANGUAGE_SELECTION
+    Limba (reporniţi jocul ca să se aplice)
+ 
+# Wares
+NONE
+    Nimic
+HYDROGEN
+    Hidrogen
+HYDROGEN_DESCRIPTION
+    Hidrogenul este folosit în principal drept combustibil de fuziune
+LIQUID_OXYGEN
+    Oxigen Lichid
+LIQUID_OXYGEN_DESCRIPTION
+    Oxigenul este necesar sistemelor de menţinere a vieţii şi câtorva procesări industriale
+METAL_ORE
+    Minereu din metal
+CARBON_ORE
+    Minereu din cărbune
+CARBON_ORE_DESCRIPTION
+    Minereurile din cărbune (cărbuni şi petrol) sunt necesare pentru sintetizarea multor chimicale folositoare, inclusiv plastice, mâncare sintetică, doctorii şi textile
+METAL_ALLOYS
+    Aliaje din metal
+PLASTICS
+    Plastice
+FRUIT_AND_VEG
+    Fructe şi Vegetale
+ANIMAL_MEAT
+    Carne Animală
+LIVE_ANIMALS
+    Animale Vii
+LIQUOR
+    Lichior
+GRAIN
+    Grâne
+TEXTILES
+    Textile
+FERTILIZER
+    Îngrăşământ
+WATER
+    Apă
+MEDICINES
+    Doctorii
+CONSUMER_GOODS
+    Bunuri de consum
+COMPUTERS
+    Calculatoare
+ROBOTS
+    Roboţi
+PRECIOUS_METALS
+    Metale preţioase
+INDUSTRIAL_MACHINERY
+    Utilaje industriale
+FARM_MACHINERY
+    Utilaje fermiere
+MINING_MACHINERY
+    Utilaje de minerit
+AIR_PROCESSORS
+    Filtre de aer
+SLAVES
+    Sclavi
+HAND_WEAPONS
+    Arme de mână
+BATTLE_WEAPONS
+    Arme de luptă
+NERVE_GAS
+    Gaz Paralizant
+NARCOTICS
+    Narcotice
+MILITARY_FUEL
+    Combustibil militar
+RUBBISH
+    Gunoi
+RADIOACTIVES
+    Deşeuri radioactive
+ 
+# Hardware
+MISSILE_UNGUIDED
+    Racheta nedirijată R40
+MISSILE_GUIDED
+    Rachetă Teleghidată
+MISSILE_SMART
+    Rachetă Inteligentă
+MISSILE_NAVAL
+    Rachetă Navală
+ATMOSPHERIC_SHIELDING
+    Scut Atmosferic
+ATMOSPHERIC_SHIELDING_DESCRIPTION
+    Protejează nava de căldura intrării în atmosferă.
+ECM_BASIC
+    Sistem ECM
+ECM_BASIC_DESCRIPTION
+    Un sistem de contramăsuri electronice defensive împotriva rachetelor, capabile să distrugă câteva rachete autoghidate.
+SCANNER
+    Scaner
+SCANNER_DESCRIPTION
+    Oferă o hartă 3D a navelor apropiate.
+ECM_ADVANCED
+    Sistem avansat ECM
+ECM_ADVANCED_DESCRIPTION
+    Un sistem de contramăsuri electronice defensive împotriva rachetelor, capabile să distrugă câteva tipuri mai avansate de rachete autoghidate.
+SHIELD_GENERATOR
+    Generator de scut
+SHIELD_GENERATOR_DESCRIPTION
+    Oferă apărare adiţională fuzelajului navei per unitate instalată.
+LASER_COOLING_BOOSTER
+    Amplificator Sistem de Răcire Laser
+LASER_COOLING_BOOSTER_DESCRIPTION
+    Un sistem îmbunătăţit de răcire pentru armele dumneavoastră.
+CARGO_LIFE_SUPPORT
+    Sistem de Susţinere a Vieţii al Halei de Mărfuri
+CARGO_LIFE_SUPPORT_DESCRIPTION
+    Permite transportul de marfă vie.
+AUTOPILOT
+    Autopilot
+AUTOPILOT_DESCRIPTION
+    Un calculator de zbor de bord.
+RADAR_MAPPER
+    Cartograf Radar
+RADAR_MAPPER_DESCRIPTION
+    Folosit pentru a inspecta de la distanţă echipamentul, încărcătura şi starea altor nave.
+FUEL_SCOOP
+    Excavator Combustibil
+FUEL_SCOOP_DESCRIPTION
+    Permite excavarea combustibilului de hidrogen de pe planetele gigantice de gaz.
+HYPERCLOUD_ANALYZER
+    Analizator Hipernor
+HYPERCLOUD_ANALYZER_DESCRIPTION
+    Analizează norii unui salt în hiperspaţiu pentru a determina destinaţia si timpul sosirii sau plecării.
+HULL_AUTOREPAIR
+    Sistem de Autoreparare Fuzelaj
+HULL_AUTOREPAIR_DESCRIPTION
+    Repară automat fuzelajul navei în caz de avarii.
+SHIELD_ENERGY_BOOSTER
+    Amplificator Energie Scut
+SHIELD_ENERGY_BOOSTER_DESCRIPTION
+    Creşte rata reîncărcării scuturilor.
+DRIVE_CLASS1
+    Motor Superluminic Clasa 1
+DRIVE_CLASS2
+    Motor Superluminic Clasa 2
+DRIVE_CLASS3
+    Motor Superluminic Clasa 3
+DRIVE_CLASS4
+    Motor Superluminic Clasa 4
+DRIVE_CLASS5
+    Motor Superluminic Clasa 5
+DRIVE_CLASS6
+    Motor Superluminic Clasa 6
+DRIVE_CLASS7
+    Motor Superluminic Clasa 7
+DRIVE_CLASS8
+    Motor Superluminic Clasa 8
+DRIVE_CLASS9
+    Motor Superluminic Clasa 9
+DRIVE_MIL1
+    Motor Militar Clasa 1
+DRIVE_MIL2
+    Motor Militar Clasa 2
+DRIVE_MIL3
+    Motor Militar Clasa 3
+DRIVE_MIL4
+    Motor Militar Clasa 4
+PULSECANNON_1MW
+    Tun intermitent 1MW
+PULSECANNON_DUAL_1MW
+    Tun dual intermitent 1MW
+PULSECANNON_2MW
+    Tun intermitent 2MW
+PULSECANNON_RAPID_2MW
+    Tun intermitent cu foc rapid 2MW
+PULSECANNON_4MW
+    Tun intermitent 4MW
+PULSECANNON_10MW
+    Tun intermitent 10MW
+PULSECANNON_20MW
+    Tun intermitent 20MW
+MININGCANNON_17MW
+    Tun forjare 17MW
+MININGCANNON_17MW_DESCRIPTION
+    Folosit pentru a forja asteroizi bogaţi în minerale.
+SMALL_PLASMA_ACCEL
+    Accelerator plasmă mic
+LARGE_PLASMA_ACCEL
+    Accelerator plasmă mare
+CLEAN
+    Curat
+HYPERSPACE_ARRIVAL_CLOUD
+    Nor de sosire din hiperspaţiu
+HYPERSPACE_DEPARTURE_CLOUD
+    Nor de plecare în hiperspaţiu
+TYPE
+    Tip
+CLIENT
+    Client
+LOCATION
+    Locaţie
+DUE
+    Scadenţă
+REWARD
+    Recompensă
+STATUS
+    Status
+CARGO_INVENTORY
+    Inventar hală:
+JETTISON
+    Aruncă în spaţiu
+JETTISONED_1T_OF_X
+    Aţi aruncat în spaţiu 1 tonă de %commodity
+COMBAT_RATING
+    CLASIFICARE NIVEL DE LUPTĂ:
+CRIMINAL_RECORD
+    CAZIER INFRACŢIUNI:
+SHIP_INFORMATION_HEADER
+    "INFORMAŢII DESPRE NAVĂ: "
+HYPERDRIVE
+    Motor superluminic
+FREE
+    Gratis
+USED
+    Folosit
+TOTAL_WEIGHT
+    Greutate totală
+FRONT_WEAPON
+    Arma frontală
+REAR_WEAPON
+    Arma dorsală
+HYPERSPACE_RANGE
+    Arie hiperspaţiu
+NO_MOUNTING
+    fără montare
+N_LIGHT_YEARS_N_MAX
+    %distance{f.1} ani lumină (%maxdistance{f.1} max)
+SHIP_INFORMATION
+    Informaţii navă
+REPUTATION
+    Reputaţie
+MISSIONS
+    Misiuni
+SHIFT
+    "shift "
+CTRL
+    "ctrl "
+ALT
+    "alt "
+META
+    "meta "
+JOY
+    Joy
+BUTTON
+     " Buton "
+HAT
+     " Hat"
+DIRECTION
+     " Dir "
+X
+    X
+Y
+    Y
+Z
+    Z
+AXIS
+     " Axa"
+WEAPONS
+    Arme
+TARGET_OBJECT_IN_SIGHTS
+    Ţinteşte obiectul din vizor
+FIRE_LASER
+    Trage cu laser-ul
+SHIP_ORIENTATION
+    Orientare navă
+FAST_ROTATION_CONTROL
+    Control rotaţional rapid
+PITCH_UP
+    Înclinare în sus
+PITCH_DOWN
+    Înclinare în jos
+YAW_LEFT
+    Girare la stânga
+YAW_RIGHT
+    Girare la dreapta
+ROLL_LEFT
+    Rostogolire stânga
+ROLL_RIGHT
+    Rostogolire dreapta
+MANUAL_CONTROL_MODE
+    Mod control manual
+THRUSTER_MAIN
+    Propulsare înainte
+THRUSTER_RETRO
+    Propulsare înapoi
+THRUSTER_VENTRAL
+    Propulsare în sus
+THRUSTER_DORSAL
+    Propulsare în jos
+THRUSTER_PORT
+    Propulsare la stânga
+THRUSTER_STARBOARD
+    Propulsare la dreapta
+SPEED_CONTROL_MODE
+    Mod de control al vitezei
+INCREASE_SET_SPEED
+    Creşte viteza setată
+DECREASE_SET_SPEED
+    Scade viteza setată
+JOYSTICK_INPUT
+    Intrare joystick
+PITCH
+    Înclinare
+ROLL
+    Rostogolire
+YAW
+    Girare
+MISSILE
+    rachetă
+HARMLESS
+    Inofensiv
+MOSTLY_HARMLESS
+    Aproape inofensiv
+POOR
+    Slabuţ
+AVERAGE
+    Mediocru
+ABOVE_AVERAGE 
+    Peste medie
+COMPETENT
+    Competent
+DANGEROUS
+    Periculos
+DEADLY
+    Mortal
+ELITE
+    DE ELITĂ
+SIMULATING_UNIVERSE_EVOLUTION_N_BYEARS
+    Se simulează evoluţia universului: %age{f.1} mii de milioane de ani ;-)
+TOMBSTONE_EPITAPH
+    ETERNE REGRETE
+MM_START_NEW_GAME_EARTH
+    Joc nou pornind de pe Pamânt
+MM_START_NEW_GAME_E_ERIDANI
+    Joc nou pornind pe Epsilon Eridani
+MM_START_NEW_GAME_DEBUG
+    Joc nou pornind la punctul de test
+MM_LOAD_SAVED_GAME
+    Încarcă un joc salvat
+MM_QUIT
+    Ieşire din joc
+SCREENSHOT_FILENAME_TEMPLATE
+    screenshot%index{d08}.png
+PIONEERING_PILOTS_GUILD
+    Pioneering Pilots' Guild
+RIGHT_ON_COMMANDER
+    Well done commander! Your combat rating has improved!
+ALERT_CANCELLED
+    Alert cancelled.
+SHIP_DETECTED_NEARBY
+    Ship detected nearby.
+DOWNGRADING_ALERT_STATUS
+    No fire detected for 60 seconds, downgrading alert status.
+LASER_FIRE_DETECTED
+    Laser fire detected.
+SOMEWHERE_POLICE
+    %station Police
+WE_HAVE_NO_BUSINESS_WITH_YOU
+    We have no business with you at the moment.
+YOU_MUST_PAY_FINE_OF_N_CREDITS
+    We do not tolerate crime. You must pay a fine of %fine.
+PAY_THE_FINE_NOW
+    Pay the fine now.
+HANG_UP
+    Hang up.
+TRADING_ILLEGAL_GOODS
+    Trading illegal goods
+UNLAWFUL_WEAPONS_DISCHARGE
+    Unlawful weapons discharge
+PIRACY
+    Piracy
+MURDER
+    Murder
+INDEPENDENT
+    Independent
+EARTH_FEDERATION
+    Earth Federation
+INDEPENDENT_CONFEDERATION
+    Confederation of Independent Systems
+EMPIRE
+    The Empire
+NO_ESTABLISHED_ORDER
+    No established order
+HARD_CAPITALIST
+    Entirely Capitalist - no government welfare provision
+CAPITALIST
+    Capitalist
+MIXED_ECONOMY
+    Mixed economy
+PLANNED_ECONOMY
+    Centrally planned economy
+NO_CENTRAL_GOVERNANCE
+    No central governance
+EARTH_FEDERATION_COLONIAL_RULE
+    Earth Federation Colonial Rule
+EARTH_FEDERATION_DEMOCRACY
+    Earth Federation Democracy
+IMPERIAL_RULE
+    Imperial Rule
+LIBERAL_DEMOCRACY
+    Liberal democracy
+SOCIAL_DEMOCRACY
+    Social democracy
+CORPORATE_SYSTEM
+    Corporate system
+MILITARY_DICTATORSHIP
+    Military dictatorship
+COMMUNIST
+    Communist
+PLUTOCRATIC_DICTATORSHIP
+    Plutocratic dictatorship
+VIOLENT_ANARCHY
+    Disorder - Overall governance contested by armed factions
+X_CANNOT_BE_TOLERATED_HERE
+    %crime cannot be tolerated here.
+SECTOR_X_Y_Z
+    Sector: %x,%y,%z
+CURRENT_SYSTEM
+    Current system
+SELECTED_SYSTEM
+    Selected system
+HYPERSPACE_TARGET
+    Hyperspace target
+FOLLOWING_SELECTION
+    following selection
+LOCKED
+    locked
+EXACT_MATCH_X
+    Exact match: %system
+NOT_FOUND_BEST_MATCH_X
+    Not found, best match: %system
+NOT_FOUND
+    Not found
+NUMBER_HOURS
+    %hours{f.2} hrs
+QUADRUPLE_SYSTEM
+    Quadruple system
+TRIPLE_SYSTEM
+    Triple system
+BINARY_SYSTEM
+    Binary system
+ENABLED_AUTOMATIC_SYSTEM_SELECTION
+    Enabled automatic system selection.
+DISABLED_AUTOMATIC_SYSTEM_SELECTION
+    Disabled automatic system selection.
+FUEL_SCOOP_ACTIVE_N_TONNES_H_COLLECTED
+    Fuel scoop active. You now have %quantity tonnes of hydrogen.
+CARGO_BAY_LIFE_SUPPORT_LOST
+    Sensors report critical cargo bay life-support conditions.
+NO_FREE_SPACE_FOR_ITEM
+    You have no free space for this item.
+SHIP_IS_FULLY_LADEN
+    Your ship is fully laden.
+YOU_DO_NOT_HAVE_ANY_X
+    You do not have any %item.
+FRONT_VIEW
+    Front view
+REAR_VIEW
+    Rear view
+EXTERNAL_VIEW
+    External view
+NAVIGATION_STAR_MAPS
+    Navigation and star maps
+COMMS
+    Comms
+GALAXY_SECTOR_VIEW
+    Galaxy sector view
+SYSTEM_ORBIT_VIEW
+    System orbit view
+STAR_SYSTEM_INFORMATION
+    Star system information
+GALACTIC_VIEW
+    Galactic view
+NO_ALERT
+    No alert
+SHIP_NEARBY
+    Ship nearby
+DOCKING_CLEARANCE_EXPIRED
+    Docking clearance expired. If you wish to dock you must repeat your request.
+MESSAGE_FROM_X
+    Message from %sender:
+SELECT_A_TARGET
+    Select a target
+FRONT
+    Front
+REAR
+    Rear
+POLICE_SHIP_REGISTRATION
+    POLICE
+CLEARANCE_ALREADY_GRANTED_BAY_N
+    Clearance already granted. Proceed to docking bay %bay.
+CLEARANCE_GRANTED_BAY_N
+    Clearance granted. Proceed to docking bay %bay.
+CLEARANCE_DENIED_NO_BAYS
+    Clearance denied. There are no free docking bays.
+ITEM_IS_OUT_OF_STOCK
+    This item is out of stock.
+BROWN_DWARF
+    Brown dwarf sub-stellar object
+WHITE_DWARF
+    White dwarf stellar remnant
+STAR_M
+    Type 'M' red star
+STAR_K
+    Type 'K' orange star
+STAR_G
+    Type 'G' yellow star
+STAR_F
+    Type 'F' white star
+STAR_A
+    Type 'A' hot white star
+STAR_B
+    Bright type 'B' blue star
+STAR_O
+    Hot, massive type 'O' star
+STAR_M_GIANT
+    Red giant star
+STAR_K_GIANT
+    Orange giant star - Unstable
+STAR_G_GIANT
+    Yellow giant star - Unstable
+STAR_AF_GIANT
+    White giant star
+STAR_B_GIANT
+    Blue giant star
+STAR_O_GIANT
+    Hot Blue giant star
+STAR_M_SUPER_GIANT
+    Red super giant star
+STAR_K_SUPER_GIANT
+    Orange super giant star
+STAR_G_SUPER_GIANT
+    Yellow super giant star
+STAR_AF_SUPER_GIANT
+    White super giant star
+STAR_B_SUPER_GIANT
+    Blue super giant star
+STAR_O_SUPER_GIANT
+    Hot Blue super giant star
+STAR_M_HYPER_GIANT
+    Red hyper giant star
+STAR_K_HYPER_GIANT
+    Orange hyper giant star - Unstable
+STAR_G_HYPER_GIANT
+    Yellow hyper giant star - Unstable
+STAR_AF_HYPER_GIANT
+    White hyper giant star
+STAR_B_HYPER_GIANT
+    Blue hyper giant star
+STAR_O_HYPER_GIANT
+    Hot Blue hyper giant star
+STAR_M_WF
+    Wolf-Rayet star - Unstable
+STAR_B_WF
+    Wolf-Rayet star - Risk of collapse
+STAR_O_WF
+    Wolf-Rayet star - Imminent collapse
+STAR_S_BH
+    A stellar black hole
+STAR_IM_BH
+    An intermediate-mass black hole
+STAR_SM_BH
+    Our galactic anchor
+VERY_LARGE_GAS_GIANT
+    Very large gas giant
+LARGE_GAS_GIANT
+    Large gas giant
+MEDIUM_GAS_GIANT
+    Medium gas giant
+SMALL_GAS_GIANT
+    Small gas giant
+ASTEROID
+    Asteroid
+MASSIVE
+    Massive
+LARGE
+    Large
+TINY
+    Tiny
+SMALL
+    Small
+COMMA_HIGHLY_VOLCANIC
+    , highly volcanic
+HIGHLY_VOLCANIC
+    Highly volcanic
+ICE_WORLD
+     " ice world"
+ROCKY_PLANET
+     " rocky planet"
+OCEANICWORLD
+     " oceanic world"
+PLANET_CONTAINING_LIQUID_WATER
+     " planet containing liquid water"
+PLANET_WITH_SOME_ICE
+     " planet with some ice"
+ROCKY_PLANET_CONTAINING_COME_LIQUIDS
+     " rocky planet containing some liquids,"
+WITH_NO_SIGNIFICANT_ATMOSPHERE
+     " with no significant atmosphere"
+TENUOUS
+    tenuous
+THIN
+    thin
+THICK
+    thick
+VERY_DENSE
+    very dense
+WITH_A
+     " with a "
+O2_ATMOSPHERE
+     " Oxygen atmosphere"
+CO2_ATMOSPHERE
+     " Carbon Dioxide atmosphere"
+CO_ATMOSPHERE
+     " Carbon Monoxide atmosphere"
+CH4_ATMOSPHERE
+     " Methane atmosphere"
+H_ATMOSPHERE
+     " Hydrogen atmosphere"
+HE_ATMOSPHERE
+     " Helium atmosphere"
+AR_ATMOSPHERE
+     " Argon atmosphere"
+S_ATMOSPHERE
+     " Sulfuric atmosphere"
+N_ATMOSPHERE
+     " Nitrogen atmosphere"
+AND_HIGHLY_COMPLEX_ECOSYSTEM
+     " and a highly complex ecosystem."
+AND_INDIGENOUS_PLANT_LIFE
+     " and indigenous plant life."
+AND_INDIGENOUS_MICROBIAL_LIFE
+     " and indigenous microbial life."
+ORBITAL_STARPORT
+    Orbital starport
+STARPORT
+    Starport
+UNKNOWN
+    <unknown>
+UNEXPLORED_SYSTEM_NO_DATA
+    Unexplored system. No more data available.
+SMALL_SCALE_PROSPECTING_NO_SETTLEMENTS
+    Small-scale prospecting. No registered settlements.
+SMALL_INDUSTRIAL_OUTPOST
+    Small industrial outpost.
+SOME_ESTABLISHED_MINING
+    Some established mining.
+YOUNG_FARMING_COLONY
+    Young farming colony.
+INDUSTRIAL_COLONY
+    Industrial colony.
+MINING_COLONY
+    Mining colony.
+OUTDOOR_AGRICULTURAL_WORLD
+    Outdoor agricultural world.
+HEAVY_INDUSTRY
+    Heavy industry.
+EXTENSIVE_MINING
+    Extensive mining operations.
+THRIVING_OUTDOOR_WORLD
+    Thriving outdoor world.
+INDUSTRIAL_HUB_SYSTEM
+    Industrial hub system.
+VAST_STRIP_MINE
+    Vast strip-mining colony.
+HIGH_POPULATION_OUTDOOR_WORLD
+    High population outdoor world.
+SOMEWHERE_SPACEPORT
+     " Spaceport"
+SOMEWHERE_STARPORT
+     " Starport"
+MASS
+    Mass
+N_WHATEVER_MASSES
+    %mass{f.3} %units masses
+SOLAR
+    Solar
+EARTH
+    Earth
+SURFACE_TEMPERATURE
+    Surface temperature
+N_CELSIUS
+    %temperature C
+N_YEARS
+    %years{f.1} years
+N_DAYS
+    %days{f.1} days
+ORBITAL_PERIOD
+    Orbital period
+PERIAPSIS_DISTANCE
+    Periapsis distance
+APOAPSIS_DISTANCE
+    Apoapsis distance
+ECCENTRICITY
+    Eccentricity
+AXIAL_TILT
+    Axial tilt
+N_DEGREES
+    %angle{f.1} degrees
+DAY_LENGTH
+    Day length
+N_EARTH_DAYS
+    %days{f.1} earth days
+STARPORTS
+    Starports
+MAJOR_IMPORTS
+    Major Imports:
+MINOR_IMPORTS
+    Minor Imports:
+MAJOR_EXPORTS
+    Major Exports:
+MINOR_EXPORTS
+    Minor Exports:
+ILLEGAL_GOODS
+    Illegal Goods:
+UNEXPLORED_SYSTEM_STAR_INFO_ONLY
+    Unexplored System. Star information has been gathered by remote telescope, but no planetary information is available.
+PLANETARY_INFO
+    Planetary info
+ECONOMIC_INFO
+    Economic info
+DEMOGRAPHICS
+    Demographics
+STABLE_SYSTEM_WITH_N_MAJOR_BODIES_STARPORTS
+    Stable system with %bodycount major %{body(s)} and %portcount %{starport(s)}.
+BODY
+    body
+BODIES
+    bodies
+SYSTEM_TYPE
+    System type:
+GOVERNMENT_TYPE
+    Government type:
+ECONOMY_TYPE
+    Economy type:
+ALLEGIANCE
+    Allegiance:
+POPULATION
+    Population:
+OVER_N_BILLION
+    Over %population billion
+OVER_N_MILLION
+    Over %population million
+A_FEW_THOUSAND
+    Only a few thousand
+NO_REGISTERED_INHABITANTS
+    No registered inhabitants
+SECTOR_COORDINATES
+    Sector coordinates:
+SYSTEM_NUMBER
+    System number:
+NAME
+    Name
+ROTATIONAL_PERIOD
+     " (rotational period)"
+RADIUS
+    Radius
+SEMI_MAJOR_AXIS
+    Semi-major axis
+TIME_POINT
+    Time point: 
+UNEXPLORED_SYSTEM_NO_SYSTEM_VIEW
+    Unexplored system. System view unavailable.
+WHEELS_ARE_UP
+    Wheels are up
+WHEELS_ARE_DOWN
+    Wheels are down
+OBJECT_LABELS_ARE_ON
+    Object labels are on
+OBJECT_LABELS_ARE_OFF
+    Object labels are off
+HYPERSPACE_JUMP
+    Hyperspace Jump
+TAKEOFF
+    Takeoff
+MANUAL_CONTROL
+    Manual control
+COMPUTER_SPEED_CONTROL
+    Computer speed control
+AUTOPILOT_ON
+    Autopilot on
+SHIP_VELOCITY_BY_REFERENCE_OBJECT
+    Ship velocity by reference object
+DISTANCE_FROM_SHIP_TO_NAV_TARGET
+    Distance from ship to navigation target
+SHIP_ALTITUDE_ABOVE_TERRAIN
+    Ship altitude above terrain
+EXTERNAL_ATMOSPHERIC_PRESSURE
+    External atmospheric pressure
+HULL_TEMP
+    Hull temp
+WEAPON_TEMP
+    Weapon temp
+HULL_INTEGRITY
+    Hull integrity
+SHIELD_INTEGRITY
+    Shield integrity
+LAUNCH_PERMISSION_DENIED_BUSY
+    Permission to launch denied: docking bay busy.
+HYPERSPACE_JUMP_ABORTED
+    Hyperspace jump aborted.
+LANDED
+    Landed
+DOCKING
+    Docking
+DOCKED
+    Docked
+HYPERSPACE
+    Hyperspace
+SET_SPEED_KM_S
+    Set speed: %speed{f.2} km/s
+SET_SPEED_M_S
+    Set speed: %speed{f.0} m/s
+KM_S_RELATIVE_TO
+    %speed{f.2} km/s rel-to %frame
+M_S_RELATIVE_TO
+    %speed{f.0} m/s rel-to %frame
+N_DISTANCE_TO_TARGET
+    %distance to target
+IN_TRANSIT_TO_N_X_X_X
+    In transit to %system [%x,%y,%z]
+ALT_IN_METRES
+    Alt: %altitude{f.0}m
+PRESSURE_N_BAR
+    P: %pressure{f.2} bar
+NO_HYPERDRIVE
+    No hyperdrive
+MASS_N_TONNES
+    Mass: %{mass}t
+SHIELD_STRENGTH_N
+    Shield strength: %shields{f.2}
+CARGO_N
+    Cargo: %{mass}t
+HYPERSPACE_ARRIVAL_CLOUD_REMNANT
+    Hyperspace arrival cloud remnant
+HYPERSPACE_X_CLOUD
+    Hyperspace %direction cloud
+SHIP_MASS_N_TONNES
+    Ship mass: %{mass}t
+DATE_DUE_N
+    Date due: %date
+ARRIVAL
+    arrival
+DEPARTURE
+    departure
+SOURCE
+    Origin
+DESTINATION
+    Destination
+HYPERSPACING_IN_N_SECONDS
+    Hyperspacing in %countdown{f.0} seconds
+NAVIGATION_TARGETS_IN_THIS_SYSTEM
+    Navigation targets in this system
+YOU_NO_MONEY
+    You do not have any money.
+FINE_PAID_N_BUT_N_REMAINING
+    You have paid %paid but still have an outstanding fine of %fine.
+FINE_PAID_N
+    You have paid the fine of %fine.
+SET_HYPERSPACE_DESTINATION_TO
+    "Set hyperspace destination to %system"
+NO_TARGET_SELECTED
+    Ship Computer: No target selected
+REQUEST_DOCKING_CLEARANCE
+    Request docking clearance
+AUTOPILOT_DOCK_WITH_STATION
+    Autopilot: Dock with space station
+PAY_FINE_REMOTELY
+    Pay fine by remote transfer (%amount)
+AUTOPILOT_FLY_TO_VICINITY_OF
+    Autopilot: Fly to vicinity of %target
+AUTOPILOT_ENTER_LOW_ORBIT_AROUND
+    Autopilot: Enter low orbit around %target
+AUTOPILOT_ENTER_MEDIUM_ORBIT_AROUND
+    Autopilot: Enter medium orbit around %target
+AUTOPILOT_ENTER_HIGH_ORBIT_AROUND
+    Autopilot: Enter high orbit around %target
+SET_HYPERSPACE_TARGET_TO_FOLLOW_THIS_DEPARTURE
+    Hyperspace cloud analyzer: Set hyperspace target to follow this departure
+FAILED
+    Failed
+COMPLETED
+    Completed
+ACTIVE
+    Active
+DISTANCE_LY
+    Distance: %distance{f.2} ly
