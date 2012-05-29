@@ -197,7 +197,7 @@ void LuaChatForm::OnClickBuy(int t) {
 
 	if (allow_buy) {
 		if (SellTo(Pi::player, static_cast<Equip::Type>(t), true)) {
-			Pi::Message(stringf(Lang::BOUGHT_1T_OF, formatarg("commodity", EquipType::types[t].name)));
+			Pi::Message(stringf(Lang::BOUGHT_1T_OF, formatarg("commodity", Equip::types[t].name)));
 		}
 		m_commodityTradeWidget->UpdateStock(t);
 	}
@@ -221,7 +221,7 @@ void LuaChatForm::OnClickSell(int t) {
 
 	if (allow_sell) {
 		if (BuyFrom(Pi::player, static_cast<Equip::Type>(t), true)) {
-			Pi::Message(stringf(Lang::SOLD_1T_OF, formatarg("commodity", EquipType::types[t].name)));
+			Pi::Message(stringf(Lang::SOLD_1T_OF, formatarg("commodity", Equip::types[t].name)));
 		}
 		m_commodityTradeWidget->UpdateStock(t);
 	}
@@ -409,9 +409,8 @@ static int l_luachatform_set_face(lua_State *l)
 {
 	LuaChatForm *form = LuaObject<LuaChatForm>::GetFromLua(1);
 
-	if (!lua_istable(l, 2))
-		luaL_typerror(l, 2, lua_typename(l, LUA_TTABLE));
-	
+	luaL_checktype(l, 2, LUA_TTABLE);
+
 	LUA_DEBUG_START(l);
 
 	Uint32 flags = 0;
@@ -636,8 +635,7 @@ int LuaChatForm::l_luachatform_add_goods_trader(lua_State *l)
 
 	LUA_DEBUG_START(l);
 
-	if(!lua_istable(l, 2))
-		luaL_typerror(l, 2, lua_typename(l, LUA_TTABLE));
+	luaL_checktype(l, 2, LUA_TTABLE);
 
 	// check that the provided table contains all the functions we need
 	int old_top = lua_gettop(l);
@@ -749,7 +747,7 @@ template <> const char *LuaObject<LuaChatForm>::s_type = "ChatForm";
 
 template <> void LuaObject<LuaChatForm>::RegisterClass()
 {
-	static const luaL_reg l_methods[] = {
+	static const luaL_Reg l_methods[] = {
 		{ "SetTitle",            l_luachatform_set_title                     },
 		{ "SetFace",             l_luachatform_set_face                      },
 		{ "SetMessage",          LuaChatForm::l_luachatform_set_message      },

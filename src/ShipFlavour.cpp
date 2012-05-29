@@ -15,7 +15,6 @@ static const LmrMaterial s_white = {
 
 ShipFlavour::ShipFlavour()
 {
-	regid[0] = 0;
 	price = 0;
 }
 
@@ -45,10 +44,14 @@ void ShipFlavour::MakeRandomColor(LmrMaterial &m)
 ShipFlavour::ShipFlavour(ShipType::Type type_)
 {
 	type = type_;
-	snprintf(regid, sizeof(regid), "%c%c-%04d",
-		'A' + Pi::rng.Int32(26),
-		'A' + Pi::rng.Int32(26),
-		Pi::rng.Int32(10000));
+	regid = "XX-1111";
+	regid[0] = 'A' + Pi::rng.Int32(26);
+	regid[1] = 'A' + Pi::rng.Int32(26);
+	int code = Pi::rng.Int32(10000);
+	regid[3] = '0' + ((code / 1000) % 10);
+	regid[4] = '0' + ((code /  100) % 10);
+	regid[5] = '0' + ((code /   10) % 10);
+	regid[6] = '0' + ((code /    1) % 10);
 	price = std::max(ShipType::types[type].baseprice, 1);
 	price = price + Pi::rng.Int32(price)/64;
 
@@ -58,12 +61,13 @@ ShipFlavour::ShipFlavour(ShipType::Type type_)
 
 void ShipFlavour::MakeTrulyRandom(ShipFlavour &v)
 {
-	v = ShipFlavour(ShipType::GetRandomType());
+	const std::vector<ShipType::Type> &ships = ShipType::player_ships;
+	v = ShipFlavour(ships[Pi::rng.Int32(ships.size())]);
 }
 
 void ShipFlavour::ApplyTo(LmrObjParams *p) const
 {
-	p->argStrings[0] = regid;
+	p->label = regid.c_str();
 	p->pMat[0] = primaryColor;
 	p->pMat[1] = secondaryColor;
 	p->pMat[2] = s_white;
@@ -98,7 +102,7 @@ void ShipFlavour::Load(Serializer::Reader &rd)
 {
 	type = rd.String();
 	price = rd.Int32();
-	rd.Cstring2(regid, sizeof(regid));
+	regid = rd.String();
 	LoadLmrMaterial(rd, &primaryColor);
 	LoadLmrMaterial(rd, &secondaryColor);
 }

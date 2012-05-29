@@ -1,5 +1,9 @@
 include $(top_srcdir)/Makefile.common
 
+AM_CFLAGS += $(WARN_CFLAGS)
+AM_CPPFLAGS += $(WARN_CPPFLAGS)
+AM_CXXFLAGS += $(WARN_CXXFLAGS)
+
 INCLUDES = -I$(srcdir)/..
 
 noinst_LIBRARIES = libgui.a
@@ -28,6 +32,7 @@ noinst_HEADERS = \
 	GuiTabbed.h \
 	GuiTextEntry.h \
 	GuiTextLayout.h \
+	GuiTexturedQuad.h \
 	GuiToggleButton.h \
 	GuiToolTip.h \
 	GuiVScrollBar.h \
@@ -56,6 +61,7 @@ libgui_a_SOURCES = \
 	GuiTabbed.cpp \
 	GuiTextEntry.cpp \
 	GuiTextLayout.cpp \
+	GuiTexturedQuad.cpp \
 	GuiToggleButton.cpp \
 	GuiToolTip.cpp \
 	GuiVScrollBar.cpp \

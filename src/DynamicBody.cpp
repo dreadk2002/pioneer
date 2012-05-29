@@ -23,6 +23,8 @@ DynamicBody::DynamicBody(): ModelBody()
 	m_atmosForce = vector3d(0.0);
 	m_gravityForce = vector3d(0.0);
 	m_externalForce = vector3d(0.0);		// do external forces calc instead?
+	m_lastForce = vector3d(0.0);
+	m_lastTorque = vector3d(0.0);
 }
 
 void DynamicBody::SetForce(const vector3d f)
@@ -50,9 +52,9 @@ void DynamicBody::AddRelTorque(const vector3d t)
 	m_torque += m_orient.ApplyRotationOnly(t);
 }
 
-void DynamicBody::Save(Serializer::Writer &wr)
+void DynamicBody::Save(Serializer::Writer &wr, Space *space)
 {
-	ModelBody::Save(wr);
+	ModelBody::Save(wr, space);
 	for (int i=0; i<16; i++) wr.Double(m_orient[i]);
 	wr.Vector3d(m_force);
 	wr.Vector3d(m_torque);
@@ -64,9 +66,9 @@ void DynamicBody::Save(Serializer::Writer &wr)
 	wr.Bool(m_enabled);
 }
 
-void DynamicBody::Load(Serializer::Reader &rd)
+void DynamicBody::Load(Serializer::Reader &rd, Space *space)
 {
-	ModelBody::Load(rd);
+	ModelBody::Load(rd, space);
 	for (int i=0; i<16; i++) m_orient[i] = rd.Double();
 	m_oldOrient = m_orient;
 	m_force = rd.Vector3d();
@@ -79,7 +81,7 @@ void DynamicBody::Load(Serializer::Reader &rd)
 	m_enabled = rd.Bool();
 }
 
-void DynamicBody::PostLoadFixup()
+void DynamicBody::PostLoadFixup(Space *space)
 {
 	CalcExternalForce();
 }
@@ -107,6 +109,13 @@ void DynamicBody::SetPosition(vector3d p)
 vector3d DynamicBody::GetPosition() const
 {
 	return vector3d(m_orient[12], m_orient[13], m_orient[14]);
+}
+
+matrix4x4d DynamicBody::GetTransformRelTo(const Frame* relTo) const
+{
+	matrix4x4d m;
+	Frame::GetFrameTransform(GetFrame(), relTo, m);
+	return m * m_orient;
 }
 
 void DynamicBody::CalcExternalForce()
@@ -186,10 +195,13 @@ void DynamicBody::TimeStepUpdate(const float timeStep)
 		m_orient[14] = pos.z;
 		TriMeshUpdateLastPos(m_orient);
 
-//printf("vel = %.1f,%.1f,%.1f, force = %.1f,%.1f,%.1f, external = %.1f,%.1f,%.1f\n",
-//	m_vel.x, m_vel.y, m_vel.z, m_force.x, m_force.y, m_force.z,
+//if (this->IsType(Object::PLAYER))
+//printf("pos = %.1f,%.1f,%.1f, vel = %.1f,%.1f,%.1f, force = %.1f,%.1f,%.1f, external = %.1f,%.1f,%.1f\n",
+//	pos.x, pos.y, pos.z, m_vel.x, m_vel.y, m_vel.z, m_force.x, m_force.y, m_force.z,
 //	m_externalForce.x, m_externalForce.y, m_externalForce.z);
 
+		m_lastForce = m_force;
+		m_lastTorque = m_torque;
 		m_force = vector3d(0.0);
 		m_torque = vector3d(0.0);
 		CalcExternalForce();			// regenerate for new pos/vel
@@ -197,15 +209,6 @@ void DynamicBody::TimeStepUpdate(const float timeStep)
 		m_oldOrient = m_orient;
 		m_oldAngDisplacement = vector3d(0.0);
 	}
-}
-
-// for timestep changes, to stop autopilot overshoot
-void DynamicBody::ApplyAccel(const float timeStep)
-{
-	vector3d newvel = m_vel + double(timeStep) * m_force * (1.0 / m_mass);
-	if (newvel.LengthSqr() < m_vel.LengthSqr()) m_vel = newvel;
-	vector3d newav = m_angVel + double(timeStep) * m_torque * (1.0 / m_angInertia);
-	if (newav.LengthSqr() < m_angVel.LengthSqr()) m_angVel = newav;
 }
 
 void DynamicBody::UpdateInterpolatedTransform(double alpha)
@@ -217,7 +220,7 @@ void DynamicBody::UpdateInterpolatedTransform(double alpha)
 	m_interpolatedTransform = m_oldOrient;
 	{
 		double len = m_oldAngDisplacement.Length() * double(alpha);
-		if (! float_is_zero_general(len)) {
+		if (! is_zero_general(len)) {
 			vector3d rotAxis = m_oldAngDisplacement.Normalized();
 			matrix4x4d rotMatrix = matrix4x4d::RotateMatrix(len,
 					rotAxis.x, rotAxis.y, rotAxis.z);
@@ -306,9 +309,14 @@ void DynamicBody::SetAngVelocity(vector3d v)
 #define KINETIC_ENERGY_MULT	0.00001f
 bool DynamicBody::OnCollision(Object *o, Uint32 flags, double relVel)
 {
+	// don't bother doing collision damage from a missile that will now explode, or may have already
+	// also avoids an occasional race condition where destruction event of this could be queued twice
+	// returning true to ensure that the missile can react to the collision
+	if (o->IsType(Object::MISSILE)) return true;
+
 	double kineticEnergy = 0;
 	if (o->IsType(Object::DYNAMICBODY)) {
-		kineticEnergy = KINETIC_ENERGY_MULT * m_mass * relVel * relVel;
+		kineticEnergy = KINETIC_ENERGY_MULT * static_cast<DynamicBody*>(o)->GetMass() * relVel * relVel;
 	} else {
 		kineticEnergy = KINETIC_ENERGY_MULT * m_mass * relVel * relVel;
 	}

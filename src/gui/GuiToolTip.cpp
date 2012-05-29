@@ -19,6 +19,11 @@ ToolTip::ToolTip(std::string &text)
 	m_createdTime = SDL_GetTicks();
 }
 
+ToolTip::~ToolTip()
+{
+	delete m_layout;
+}
+
 void ToolTip::CalcSize()
 {
 	float size[2];
@@ -46,6 +51,7 @@ void ToolTip::Draw()
 	int age = SDL_GetTicks() - m_createdTime;
 	float alpha = age/float(FADE_TIME_MS); alpha = std::min(alpha, 0.75f);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GetSize(size);
 	glColor4f(.2f,.2f,.6f,alpha);
 	glBegin(GL_QUADS);
@@ -66,6 +72,7 @@ void ToolTip::Draw()
 	glColor4f(1,1,1,alpha);
 	m_layout->Render(size[0]-2*TOOLTIP_PADDING);
 	glPopMatrix();
+	glBlendFunc(GL_ONE, GL_ZERO);
 	glDisable(GL_BLEND);
 }
 

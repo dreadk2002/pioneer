@@ -14,13 +14,13 @@ define_model('scanner_sub', {
 	
 	static = function(lod)
 	    texture('scan.png')
-		load_obj('scanner_01.obj', Matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
+		load_obj('scanner_01.obj', matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
 		set_material('scan2', .4, 0, 0,1, .5, .5, .5, 10)
 		use_material('scan2')
-		load_obj('scanner_03.obj', Matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
+		load_obj('scanner_03.obj', matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
   		set_material('scan1', .63,.7,.83,1,1.26,1.4,1.66,10)
 		use_material('scan1')
-        load_obj('scanner_02.obj', Matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
+        load_obj('scanner_02.obj', matrix.new(v(-1,0,0),v(0,1,0),v(0,0,-1)))
 	end
 })
 
@@ -32,7 +32,7 @@ define_model('scanner', {
 	static = function(lod)
 	end,
 	dynamic = function(lod)
-		local factor = (get_arg(1)*0.5)*math.pi
+		local factor = (get_time('SECONDS')*0.5)*math.pi
 		call_model('scanner_sub', v(0,0,0), v(math.cos(factor),0,math.sin(factor)), v(0,1,0),1)
 	end
 })
@@ -44,10 +44,10 @@ define_model('scanner_+', {
 			
 	static = function(lod)
 	texture('scan.png')
-	sphere_slice(5,2, 0, 0.5*math.pi, Matrix.scale(v(.8,0.3,.8)))
+	sphere_slice(5,2, 0, 0.5*math.pi, matrix.scale(v(.8,0.3,.8)))
 	end,
 	dynamic = function(lod)
-		local factor = (get_arg(1)*0.5)*math.pi
+		local factor = (get_time('SECONDS')*0.5)*math.pi
 		call_model('scanner_sub', v(0,.3,0), v(math.cos(factor),0,math.sin(factor)), v(0,1,0),1)
 	end
 })
@@ -59,10 +59,10 @@ define_model('scanner_-', {
 			
 	static = function(lod)
 	texture('scan.png')
-	sphere_slice(5,2, 0, 0.5*math.pi, Matrix.scale(v(.8,0.3,.8)))
+	sphere_slice(5,2, 0, 0.5*math.pi, matrix.scale(v(.8,0.3,.8)))
 	end,
 	dynamic = function(lod)
-		local factor = (get_arg(1)*0.5)*math.pi
+		local factor = (get_time('SECONDS')*0.5)*math.pi
 		call_model('scanner_sub', v(0,.3,0), v(math.sin(factor),0,math.cos(factor)), v(0,1,0),1)
 	end
 })

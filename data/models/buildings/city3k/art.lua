@@ -42,18 +42,18 @@ define_model('green_bubble', {
 
 			use_material('glow2')
 			texture('wtr_x.png',v(.5,.5,0),v(.1,0,0),v(0,0,1))
-			sphere_slice(4*lod,2*lod,0,math.pi*.5, Matrix.translate(v(0,3,0)) * Matrix.scale(v(2.99,2.99,2.99)))
+			sphere_slice(4*lod,2*lod,0,math.pi*.5, matrix.translate(v(0,3,0)) * matrix.scale(v(2.99,2.99,2.99)))
 
 			use_material('cutout')
 			texture('bubbles.png',v(.5,.5,0),v(.05,0,0),v(0,0,1))
-			sphere_slice(4*lod,2*lod,0,math.pi*.5, Matrix.translate(v(0,3,0)) * Matrix.scale(v(3,3,3)))
+			sphere_slice(4*lod,2*lod,0,math.pi*.5, matrix.translate(v(0,3,0)) * matrix.scale(v(3,3,3)))
 			bld_base_2(lod,1.2,0)
 		end
 	end,
 	dynamic = function(lod)
 		--pulsating glow
 		if lod > 1 then
-			set_material('glow2',lerp_materials(get_arg(1)*0.3, {0,0,0,1,0,0,0,0,1.6,1.9,0},
+			set_material('glow2',lerp_materials(get_time('SECONDS')*0.3, {0,0,0,1,0,0,0,0,1.6,1.9,0},
 																 {0,0,0,1,0,0,0,0,1,2.5,0}))
 		end
 	end
@@ -109,13 +109,13 @@ define_model('blue_bubble', {
 					texture('wtr_x_s.png',v(.5,.5,0),v(.1,0,0),v(0,0,1))
 				end
 				use_material('glow2')
-				sphere_slice(4*lod,2*lod,0,math.pi*.5, Matrix.translate(v(0,3,0)) * Matrix.scale(v(2.99,2.99,2.99)))
+				sphere_slice(4*lod,2*lod,0,math.pi*.5, matrix.translate(v(0,3,0)) * matrix.scale(v(2.99,2.99,2.99)))
 
 				if lod > 1 then
 					texture('bubbles_s.png',v(.5,.5,0),v(.05,0,0),v(0,0,1))
 				end
 				use_material('cutout')
-				sphere_slice(4*lod,2*lod,0,math.pi*.5, Matrix.translate(v(0,3,0)) * Matrix.scale(v(3,3,3)))
+				sphere_slice(4*lod,2*lod,0,math.pi*.5, matrix.translate(v(0,3,0)) * matrix.scale(v(3,3,3)))
 			end
 
 			call_model('bld_base2', v(0,0,0),v(1,0,0),v(0,1,0),1.2)
@@ -124,7 +124,7 @@ define_model('blue_bubble', {
 	end,
 	dynamic = function(lod)
 		if lod > 1 then
-			set_material('glow2',lerp_materials(get_arg(1)*0.3, {0,0,0,1,0,0,0,0,2.5,1,1.5},
+			set_material('glow2',lerp_materials(get_time('SECONDS')*0.3, {0,0,0,1,0,0,0,0,2.5,1,1.5},
 																 {0,0,0,1,0,0,0,0,1,1.5,2.5}))
 		end
 
@@ -167,7 +167,7 @@ define_model('advert_0', {
 	end,
 	dynamic = function(lod)
 		if lod > 1 then
-			set_material('glow2',lerp_materials(get_arg(1)*2, {0,0,0,1,0,0,0,0,1.6,1.9,0},
+			set_material('glow2',lerp_materials(get_time('SECONDS')*2, {0,0,0,1,0,0,0,0,1.6,1.9,0},
 																 {0,0,0,1,0,0,0,0,1.4,1,1.8}))
 		end
 
@@ -233,7 +233,7 @@ define_model('pink_obelisk', {
 
 	dynamic = function(lod)
 		if lod > 1 then
-			set_material('glow2',lerp_materials(get_arg(1)*0.1, {0,0,0,1,1,1,1,100,2.2,1,1.5},
+			set_material('glow2',lerp_materials(get_time('SECONDS')*0.1, {0,0,0,1,1,1,1,100,2.2,1,1.5},
 																 {0,0,0,1,1,1,1,100,1.5,1,2.2}))
 		end
 	end

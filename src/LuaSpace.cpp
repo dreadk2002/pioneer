@@ -13,6 +13,8 @@
 #include "Pi.h"
 #include "SpaceStation.h"
 #include "Player.h"
+#include "Game.h"
+#include "MathUtil.h"
 
 /*
  * Interface: Space
@@ -24,9 +26,8 @@ static void _unpack_hyperspace_args(lua_State *l, int index, SystemPath* &path, 
 {
 	if (lua_isnone(l, index)) return;
 
-	if (!lua_istable(l, index))
-		luaL_typerror(l, index, lua_typename(l, LUA_TTABLE));
-	
+	luaL_checktype(l, index, LUA_TTABLE);
+
 	LUA_DEBUG_START(l);
 
 	lua_pushinteger(l, 1);
@@ -53,6 +54,7 @@ static Body *_maybe_wrap_ship_with_cloud(Ship *ship, SystemPath *path, double du
 
 	HyperspaceCloud *cloud = new HyperspaceCloud(ship, due, true);
 	ship->SetHyperspaceDest(path);
+	ship->SetFlightState(Ship::HYPERSPACE);
 
 	return cloud;
 }
@@ -79,6 +81,7 @@ static Body *_maybe_wrap_ship_with_cloud(Ship *ship, SystemPath *path, double du
  *                from. The table contains two elements, a <SystemPath> for
  *                the system the ship is travelling from, and the due
  *                date/time that the ship should emerge from the cloud.
+ *                In this case min and max arguments are ignored.
  *
  * Return:
  *
@@ -89,7 +92,7 @@ static Body *_maybe_wrap_ship_with_cloud(Ship *ship, SystemPath *path, double du
  * > -- spawn a ship 5-6AU from the system centre
  * > local ship = Ship.Spawn("Eagle Long Range Fighter, 5, 6)
  *
- * > -- spawn a ship in the 9-11AU hyperspace area and make it appear that it
+ * > -- spawn a ship in the ~11AU hyperspace area and make it appear that it
  * > -- came from Sol and will arrive in ten minutes
  * > local ship = Ship.Spawn(
  * >     "Flowerfairy Heavy Trader", 9, 11,
@@ -106,6 +109,9 @@ static Body *_maybe_wrap_ship_with_cloud(Ship *ship, SystemPath *path, double du
  */
 static int l_space_spawn_ship(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	LUA_DEBUG_START(l);
 
 	const char *type = luaL_checkstring(l, 1);
@@ -125,16 +131,15 @@ static int l_space_spawn_ship(lua_State *l)
 	Body *thing = _maybe_wrap_ship_with_cloud(ship, path, due);
 
 	// XXX protect against spawning inside the body
-	float longitude = Pi::rng.Double(-M_PI,M_PI);
-	float latitude = Pi::rng.Double(-M_PI,M_PI);
-
-	float dist = (min_dist + Pi::rng.Double(max_dist-min_dist));
-	vector3d pos = vector3d(sin(longitude)*cos(latitude), sin(latitude), cos(longitude)*cos(latitude));
-
-	thing->SetFrame(Space::rootFrame);
-	thing->SetPosition(pos * dist * AU);
+	thing->SetFrame(Pi::game->GetSpace()->GetRootFrame());
+	if (path == NULL)
+		thing->SetPosition(MathUtil::RandomPointOnSphere(min_dist, max_dist)*AU);
+	else
+		// XXX broken. this is ignoring min_dist & max_dist. otoh, what's the
+		// correct behaviour given there's now a fixed hyperspace exit point?
+		thing->SetPosition(Pi::game->GetSpace()->GetHyperspaceExitPoint(*path));
 	thing->SetVelocity(vector3d(0,0,0));
-	Space::AddBody(thing);
+	Pi::game->GetSpace()->AddBody(thing);
 
 	LuaShip::PushToLua(ship);
 
@@ -160,8 +165,12 @@ static int l_space_spawn_ship(lua_State *l)
  *
  *   max - maximum distance to place the ship
  *
- *   hyperspace - option table containing hyperspace entry information. See
- *                <SpawnShip> for a full description of this parameter.
+ *   hyperspace - optional table containing hyperspace entry information. If
+ *                this is provided the ship will not spawn directly. Instead,
+ *                a hyperspace cloud will be created that the ship will exit
+ *                from. The table contains two elements, a <SystemPath> for
+ *                the system the ship is travelling from, and the due
+ *                date/time that the ship should emerge from the cloud.
  *
  * Return:
  *
@@ -182,6 +191,9 @@ static int l_space_spawn_ship(lua_State *l)
  */
 static int l_space_spawn_ship_near(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	LUA_DEBUG_START(l);
 
 	const char *type = luaL_checkstring(l, 1);
@@ -202,16 +214,10 @@ static int l_space_spawn_ship_near(lua_State *l)
 	Body *thing = _maybe_wrap_ship_with_cloud(ship, path, due);
 
 	// XXX protect against spawning inside the body
-	float longitude = Pi::rng.Double(-M_PI,M_PI);
-	float latitude = Pi::rng.Double(-M_PI,M_PI);
-
-	float dist = (min_dist + Pi::rng.Double(max_dist-min_dist));
-	vector3d pos = vector3d(sin(longitude)*cos(latitude), sin(latitude), cos(longitude)*cos(latitude));
-
 	thing->SetFrame(nearbody->GetFrame());
-	thing->SetPosition((pos * dist * 1000.0) + nearbody->GetPosition());
+	thing->SetPosition((MathUtil::RandomPointOnSphere(min_dist, max_dist)* 1000.0) + nearbody->GetPosition());
 	thing->SetVelocity(vector3d(0,0,0));
-	Space::AddBody(thing);
+	Pi::game->GetSpace()->AddBody(thing);
 
 	LuaShip::PushToLua(ship);
 
@@ -248,6 +254,9 @@ static int l_space_spawn_ship_near(lua_State *l)
  */
 static int l_space_spawn_ship_docked(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	LUA_DEBUG_START(l);
 
 	const char *type = luaL_checkstring(l, 1);
@@ -264,10 +273,8 @@ static int l_space_spawn_ship_docked(lua_State *l)
 	assert(ship);
 
 	ship->SetFrame(station->GetFrame());
-	Space::AddBody(ship);
+	Pi::game->GetSpace()->AddBody(ship);
 	ship->SetDockedWith(station, port);
-
-	station->CreateBB();
 
 	LuaShip::PushToLua(ship);
 
@@ -308,6 +315,9 @@ static int l_space_spawn_ship_docked(lua_State *l)
  */
 static int l_space_spawn_ship_parked(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	LUA_DEBUG_START(l);
 
 	const char *type = luaL_checkstring(l, 1);
@@ -326,7 +336,7 @@ static int l_space_spawn_ship_parked(lua_State *l)
 	vector3d pos, vel;
 	matrix4x4d rot = matrix4x4d::Identity();
 
-	if (station->GetSBody()->type == SBody::TYPE_STARPORT_SURFACE) {
+	if (station->GetSystemBody()->type == SystemBody::TYPE_STARPORT_SURFACE) {
 		vel = vector3d(0.0);
 
 		// XXX on tiny planets eg asteroids force this to be larger so the
@@ -363,7 +373,7 @@ static int l_space_spawn_ship_parked(lua_State *l)
 	ship->SetPosition(pos);
 	ship->SetRotMatrix(rot);
 
-	Space::AddBody(ship);
+	Pi::game->GetSpace()->AddBody(ship);
 
 	ship->AIHoldPosition();
 	
@@ -400,12 +410,15 @@ static int l_space_spawn_ship_parked(lua_State *l)
  */
 static int l_space_get_body(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	int id = luaL_checkinteger(l, 1);
 
-	SystemPath path = Pi::currentSystem->GetPath();
+	SystemPath path = Pi::game->GetSpace()->GetStarSystem()->GetPath();
 	path.bodyIndex = id;
 
-	Body *b = Space::FindBodyForPath(&path);
+	Body *b = Pi::game->GetSpace()->FindBodyForPath(&path);
 	if (!b) return 0;
 
 	LuaBody::PushToLua(b);
@@ -450,25 +463,36 @@ static int l_space_get_body(lua_State *l)
  */
 static int l_space_get_bodies(lua_State *l)
 {
+	if (!Pi::game)
+		luaL_error(l, "Game is not started");
+
 	LUA_DEBUG_START(l);
 
 	bool filter = false;
 	if (lua_gettop(l) >= 1) {
-		if (!lua_isfunction(l, 1))
-			luaL_typerror(l, 1, lua_typename(l, LUA_TFUNCTION));
+		luaL_checktype(l, 1, LUA_TFUNCTION); // any type of function
 		filter = true;
 	}
 
 	lua_newtable(l);
 	pi_lua_table_ro(l);
 
-	for (std::list<Body*>::iterator i = Space::bodies.begin(); i != Space::bodies.end(); i++) {
+	for (Space::BodyIterator i = Pi::game->GetSpace()->BodiesBegin(); i != Pi::game->GetSpace()->BodiesEnd(); ++i) {
 		Body *b = *i;
 
 		if (filter) {
 			lua_pushvalue(l, 1);
 			LuaBody::PushToLua(b);
-			pi_lua_protected_call(l, 1, 1);
+			if (int ret = lua_pcall(l, 1, 1, 0)) {
+				const char *errmsg( "Unknown error" );
+				if (ret == LUA_ERRRUN)
+					errmsg = lua_tostring(l, -1);
+				else if (ret == LUA_ERRMEM)
+					errmsg = "memory allocation failure";
+				else if (ret == LUA_ERRERR)
+					errmsg = "error in error handler function";
+				luaL_error(l, "Error in filter function: %s", errmsg);
+			}
 			if (!lua_toboolean(l, -1)) {
 				lua_pop(l, 1);
 				continue;
@@ -476,7 +500,7 @@ static int l_space_get_bodies(lua_State *l)
 			lua_pop(l, 1);
 		}
 
-		lua_pushinteger(l, lua_objlen(l, -1)+1);
+		lua_pushinteger(l, lua_rawlen(l, -1)+1);
 		LuaBody::PushToLua(b);
 		lua_rawset(l, -3);
     }
@@ -492,7 +516,7 @@ void LuaSpace::Register()
 
 	LUA_DEBUG_START(l);
 
-	static const luaL_reg methods[] = {
+	static const luaL_Reg methods[] = {
 		{ "SpawnShip",       l_space_spawn_ship        },
 		{ "SpawnShipNear",   l_space_spawn_ship_near   },
 		{ "SpawnShipDocked", l_space_spawn_ship_docked },
@@ -503,8 +527,8 @@ void LuaSpace::Register()
 		{ 0, 0 }
 	};
 
-	luaL_register(l, "Space", methods);
-	lua_pop(l, 1);
+	luaL_newlib(l, methods);
+	lua_setglobal(l, "Space");
 
 	LUA_DEBUG_END(l, 0);
 }

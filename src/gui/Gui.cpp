@@ -1,6 +1,6 @@
 #include "libs.h"
 #include "Gui.h"
-#include "render/Render.h"
+#include "graphics/Graphics.h"
 
 namespace Gui {
 
@@ -86,15 +86,22 @@ void Draw()
 	Screen::Draw();
 }
 
-void Init(int screen_width, int screen_height, int ui_width, int ui_height)
+void Init(Graphics::Renderer *renderer, int screen_width, int screen_height, int ui_width, int ui_height)
 {
 	SDL_EnableUNICODE(1);
-	Screen::Init(screen_width, screen_height, ui_width, ui_height);
+	Screen::Init(renderer, screen_width, screen_height, ui_width, ui_height);
+}
+
+void Uninit()
+{
+	std::list<TimerSignal*>::iterator i;
+	for (i=g_timeSignals.begin(); i!=g_timeSignals.end(); ++i) delete *i;
+
+	Screen::Uninit();
 }
 
 void MainLoopIteration()
 {
-	Render::PrepareFrame();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
@@ -113,16 +120,15 @@ void MainLoopIteration()
 
 	SDL_ShowCursor(1);
 	SDL_WM_GrabInput(SDL_GRAB_OFF);
-	Render::PostProcess();
 	Gui::Draw();
-	Render::SwapBuffers();
+	Graphics::SwapBuffers();
 }
 
 namespace Theme {
 	namespace Colors {
-		const float bg[] = { .25f,.37f,.63f };
-		const float bgShadow[] = { .08f,.12f,.21f };
-		const float tableHeading[] = { .7f,.7f,1.0f };
+		const Color bg(.25f, .37f, .63f);
+		const Color bgShadow(.08f, .12f, .21f);
+		const Color tableHeading(.7f, .7f, 1.0f);
 	}
 	static const float BORDER_WIDTH = 2.0;
 

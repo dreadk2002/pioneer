@@ -75,7 +75,7 @@ define_model('lub_gun1', {
 		use_material('chrome')
 		texture('iise_g.png')
 		tapered_cylinder(3*lod, v(0,-2.5,-33.5), v(0,-2.5,-39), v(0,1,0), .25, .15)
-		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, Matrix.translate(v(0,-2.4,-33.5)) * Matrix.rotate(math.pi,v(0,0,1)) * Matrix.scale(v(.6,.6,.7)))
+		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, matrix.translate(v(0,-2.4,-33.5)) * matrix.rotate(math.pi,v(0,0,1)) * matrix.scale(v(.6,.6,.7)))
 		if lod > 3 then
 			set_material('hole', 0,0,0,1,0,0,0,0)
 			use_material('hole')
@@ -95,8 +95,8 @@ define_model('lub_gun2', {
 		use_material('chrome')
 		texture('iise_g.png')
 		xref_tapered_cylinder(3*lod, v(4,-1.9,-35), v(4,-1.9,-39), v(0,1,0), .25, .15)
-		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, Matrix.translate(v(3.9,-1.8,-35)) * Matrix.rotate(0.75*math.pi,v(0,.2,-1)) * Matrix.scale(v(.5,.5,.6)))
-		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, Matrix.translate(v(-3.9,-1.8,-35)) * Matrix.rotate(0.75*math.pi,v(0,-.2,1)) * Matrix.scale(v(.5,.5,.6)))
+		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, matrix.translate(v(3.9,-1.8,-35)) * matrix.rotate(0.75*math.pi,v(0,.2,-1)) * matrix.scale(v(.5,.5,.6)))
+		sphere_slice(3*lod,2*lod, 0, 0.5*math.pi, matrix.translate(v(-3.9,-1.8,-35)) * matrix.rotate(0.75*math.pi,v(0,-.2,1)) * matrix.scale(v(.5,.5,.6)))
 		if lod > 3 then
 			set_material('hole', 0,0,0,1,0,0,0,0)
 			use_material('hole')
@@ -118,7 +118,7 @@ define_model('lub_body', {
 	end,
 
 	dynamic = function(lod)
-		local reg = get_arg_string(0)
+		local reg = get_label()
 		--local select2 = 10
 		selector2()
 		if select2 < 15 then  -- plain color variable
@@ -210,28 +210,28 @@ define_model('lub_body', {
 			if select4 > 49 then
 				call_model('decal', v(-8.705,1.2,-25.2), v(-1,0,-.475), v(1,.99,.401), 2.5)
 				use_material('matte')
-				if get_arg(ARG_SHIP_EQUIP_SCANNER) == Equip.SCANNER then
+				if get_equipment('SCANNER') == 'SCANNER' then
 					call_model('antenna_1', v(0,-.9,-37.98), v(1,0,0), v(0,1,0), 1.5)
 				end
-				if get_arg(ARG_SHIP_EQUIP_LASER0) > 0 then
+				if get_equipment('LASER', 1) then
 					call_model('lub_gun2', v(0,0,0), v(1,0,0), v(0,1,0), 1)
 				end
 			else
 				use_material('matte')
-				if get_arg(ARG_SHIP_EQUIP_SCANNER) == Equip.SCANNER then
+				if get_equipment('SCANNER') == 'SCANNER' then
 					call_model('antenna_1', v(3.15,-1.6,-37.5), v(1,0,0), v(0,1,0), 1.5)
 				end
-				if get_arg(ARG_SHIP_EQUIP_LASER0) > 0 then
+				if get_equipment('LASER', 1) then
 					call_model('lub_gun1', v(0,0,0), v(1,0,0), v(0,1,0), 1)
 				end
 			end
-			if get_arg(ARG_SHIP_EQUIP_ECM) == Equip.ECM_BASIC then
+			if get_equipment('ECM') == 'ECM_BASIC' then
 				call_model('ecm_1', v(-23.2,-5.09,2), v(-1,0,0), v(.1,-1,0.01), 1.5)
 			end
-			if get_arg(ARG_SHIP_EQUIP_ECM) == Equip.ECM_ADVANCED then
+			if get_equipment('ECM') == 'ECM_ADVANCED' then
 				call_model('ecm_2', v(-23.2,-5.09,2), v(-1,0,0), v(.1,-1,0.01), 1.5)
 			end
-			if get_arg(ARG_SHIP_EQUIP_SCANNER) == Equip.SCANNER then
+			if get_equipment('SCANNER') == 'SCANNER' then
 				call_model('scanner_-', v(23.2,-4.8,2), v(-1,0,0), v(.1,-1,0.01), 2)
 			end
 		end
@@ -266,7 +266,7 @@ define_model('lub_flap_bl_l', {
 		set_material('matte', .5,.52,.55,1,.2,.2,.2,10)
 		use_material('matte')
 		texture('klappe_h_g.png')
-		load_obj('klappe_hl_l.obj', Matrix.rotate(0.5*math.pi, v(0,1,0)))
+		load_obj('klappe_hl_l.obj', matrix.rotate(0.5*math.pi, v(0,1,0)))
 	end
 })
 
@@ -280,7 +280,7 @@ define_model('lub_flap_bl_r', {
 		set_material('matte', .5,.52,.55,1,.2,.2,.2,10)
 		use_material('matte')
 		texture('klappe_h_g.png')
-		load_obj('klappe_hl_r.obj', Matrix.rotate(0.5*math.pi, v(0,1,0)))
+		load_obj('klappe_hl_r.obj', matrix.rotate(0.5*math.pi, v(0,1,0)))
 	end
 })
 
@@ -294,7 +294,7 @@ define_model('lub_flap_br_l', {
 		set_material('matte', .5,.52,.55,1,.2,.2,.2,10)
 		use_material('matte')
 		texture('klappe_h_g.png')
-		load_obj('klappe_hr_l.obj', Matrix.rotate(0.5*math.pi, v(0,1,0)))
+		load_obj('klappe_hr_l.obj', matrix.rotate(0.5*math.pi, v(0,1,0)))
 	end
 })
 
@@ -308,7 +308,7 @@ define_model('lub_flap_br_r', {
 		set_material('matte', .5,.52,.55,1,.2,.2,.2,10)
 		use_material('matte')
 		texture('klappe_h_g.png')
-		load_obj('klappe_hr_r.obj', Matrix.rotate(0.5*math.pi, v(0,1.0)))
+		load_obj('klappe_hr_r.obj', matrix.rotate(0.5*math.pi, v(0,1,0)))
 	end
 })
 
@@ -351,12 +351,12 @@ define_model('lub_fcyl', {
 		set_material('chrome', .63,.7,.83,1,1.26,1.4,1.66,10)
 		use_material('chrome')
 		texture('iise_g.png')
-		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, Matrix.scale(v(0.75,0.75,0.75)) * Matrix.rotate(math.pi, v(0,0,1)))
+		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, matrix.scale(v(0.75,0.75,0.75)) * matrix.rotate(math.pi, v(0,0,1)))
 	end,
 	dynamic = function(lod)
 		use_material('chrome')
 		texture('models/ships/lanner_ub/iise_g.png', v(0,0,0), v(0,1,0), v(1,0,0))
-		local uc_trans = math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)
+		local uc_trans = math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)
 		ring(3*lod, v(0,0,0), v(0,-4*(uc_trans),0), v(0,0,1), .2)
 		ring(3*lod, v(0,0,0), v(0,-6*(uc_trans),0), v(0,0,1), .15)
 		ring(3*lod, v(0,0,0), v(0,-7.5*(uc_trans-0.05),0), v(0,0,1), .1)
@@ -373,13 +373,13 @@ define_model('lub_bcyl', {
 		set_material('chrome', .63,.7,.83,1,1.26,1.4,1.66,10)
 		use_material('chrome')
 		texture('iise_g.png')
-		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, Matrix.translate(v(8.7,0,0)) * Matrix.scale(v(0.75,0.75,0.75)) * Matrix.rotate(math.pi, v(0,0,1)))
-		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, Matrix.translate(v(-8.7,0,0)) * Matrix.scale(v(0.75,0.75,0.75)) * Matrix.rotate(math.pi, v(0,0,1)))
+		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, matrix.translate(v(8.7,0,0)) * matrix.scale(v(0.75,0.75,0.75)) * matrix.rotate(math.pi, v(0,0,1)))
+		sphere_slice(3*lod, 2*lod, 0, .6*math.pi, matrix.translate(v(-8.7,0,0)) * matrix.scale(v(0.75,0.75,0.75)) * matrix.rotate(math.pi, v(0,0,1)))
 	end,
 	dynamic = function(lod)
 		use_material('chrome')
 		texture('models/ships/lanner_ub/iise_g.png', v(0,0,0), v(0,1,0), v(1,0,0))
-		local uc_trans = math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)
+		local uc_trans = math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)
 		xref_ring(3*lod, v(8.7,0,0), v(8.7,-3*(uc_trans),0), v(0,0,1), .2)
 		xref_ring(3*lod, v(8.7,0,0), v(8.7,-4.5*(uc_trans),0), v(0,0,1), .15)
 		xref_ring(3*lod, v(8.7,0,0), v(8.7,-5.9*(uc_trans),0), v(0,0,1), .1)
@@ -413,7 +413,7 @@ define_model('lub_ucf', {
 		load_obj('glengg_v.obj')
 	end,
 	dynamic = function(lod)
-		local w_rot = 0.5*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)
+		local w_rot = 0.5*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)
 		call_model('lub_wf', v(0,0,7.85), v(1,0,0), v(0,math.sin(w_rot),math.cos(w_rot)-0.3),1)
 	end
 })
@@ -449,7 +449,7 @@ define_model('lub_ucb', {
 	end,
 
 	dynamic = function(lod)
-		local w_rot = 0.5*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)
+		local w_rot = 0.5*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)
 		call_model('lub_wb', v(0,0,-5.5), v(1,0,0), v(0,math.cos(w_rot),math.sin(w_rot)-0.3),1)
 	end
 })
@@ -461,30 +461,6 @@ define_model('lanner_ub', {
 		bounding_radius = 50,
 		materials = {'default', 'matte', 'glow', 'e_glow', 'win'},
 		tags = {'ship'},
-		ship_defs = {
-			{
-				name='Lanner',
-				forward_thrust = -30e6,
-				reverse_thrust = 10e6,
-				up_thrust = 10e6,
-				down_thrust = -5e6,
-				left_thrust = -5e6,
-				right_thrust = 5e6,
-				angular_thrust = 90e6,
-				gun_mounts =
-				{
-				{v(0,-1.9,-38), v(0,0,-1)},
-				{v(0,1,38), v(0,0,1)},
-				},
-				max_cargo = 190,
-				max_laser = 2,
-				max_missile = 4,
-				capacity = 190,
-				hull_mass = 190,
-				price = 280000,
-				hyperdrive_class = 3,
-			}
-		}
 	},
 	static = function(lod)
 		if lod == 1 then
@@ -558,14 +534,14 @@ define_model('lanner_ub', {
 		end
 	end,
 	dynamic = function(lod)
-		set_material('glow', lerp_materials(get_arg(ARG_ALL_TIME_SECONDS)*0.3, {0, 0, 0, 1, 0, 0, 0, 0, 1.6, 1.9, 0 }, {0, 0, 0, 1, 0, 0, 0, 0, 1, 2.5,0 }))
-		set_material('e_glow', lerp_materials(get_arg(ARG_ALL_TIME_SECONDS)*0.5, {0, 0, 0, 1, 0, 0, 0, 0, .7, 1, 1.5 }, {0, 0, 0, 1, 0, 0, 0, 0, 1, .7, 1.5 }))
+		set_material('glow', lerp_materials(get_time('SECONDS')*0.3, {0, 0, 0, 1, 0, 0, 0, 0, 1.6, 1.9, 0 }, {0, 0, 0, 1, 0, 0, 0, 0, 1, 2.5,0 }))
+		set_material('e_glow', lerp_materials(get_time('SECONDS')*0.5, {0, 0, 0, 1, 0, 0, 0, 0, .7, 1, 1.5 }, {0, 0, 0, 1, 0, 0, 0, 0, 1, .7, 1.5 }))
 
-		local flap = 1.25*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0, 0.4)
-		local flap_f = 0.5*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0, 1)
-		local flap_re = 1.25*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0, 1)
-		local uc_rot = 0.5*math.pi*math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)  -- uc factor
-		local uc_trans = math.clamp(get_arg(ARG_SHIP_WHEEL_STATE), 0.2, 1)
+		local flap = 1.25*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0, 0.4)
+		local flap_f = 0.5*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0, 1)
+		local flap_re = 1.25*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0, 1)
+		local uc_rot = 0.5*math.pi*math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)  -- uc factor
+		local uc_trans = math.clamp(get_animation_position('WHEEL_STATE'), 0.2, 1)
 
 		if lod > 1 then
 			call_model('lub_flap_bl_l', v(-10.789,-5.66,2.842), v(0,0,1), v(math.sin(flap),math.cos(flap),0), 1)
@@ -574,13 +550,13 @@ define_model('lanner_ub', {
 			call_model('lub_flap_br_r', v(10.81,-5.66,2.842), v(0,0,1), v(-math.sin(flap),math.cos(flap),0), 1)
 			call_model('lub_flap_ff', v(0,-2.855,-22.949), v(1,0,0), v(0,math.cos(1.1*flap_f),math.sin(1.1*flap_f)), 1)
 
-			if get_arg(ARG_SHIP_WHEEL_STATE) >= 0.6 then
+			if get_animation_position('WHEEL_STATE') >= 0.6 then
 				call_model('lub_flap_fb', v(0,-3.267,-13.22), v(1,0,0), v(0,-math.sin(1.1*flap_re+0.4),math.cos(1.1*flap_re+0.4)), 1)
 			else
 				call_model('lub_flap_fb', v(0,-3.267,-13.22), v(1,0,0), v(0,math.cos(1.1*flap),-math.sin(1.1*flap)), 1)
 			end
 
-			if get_arg(ARG_SHIP_WHEEL_STATE) ~= 0 then
+			if get_animation_position('WHEEL_STATE') ~= 0 then
 				call_model('lub_cage', v(0,0,0), v(1,0,0), v(0,1,0), 1)
 				call_model('lub_ucf', v(0,-1.5,-22.5), v(1,0,0), v(0,math.cos(uc_rot),math.sin(uc_rot)-0.3), 1)
 				call_model('lub_fcyl', v(-0.4,-.3,-18.1), v(1,0,0), v(0,math.cos(0.57*uc_rot),math.sin(0.57*uc_rot)-0.3), 1)
@@ -601,7 +577,7 @@ define_model('lanner_ub', {
 		end
 
 		if lod == 1 then
-			if get_arg(ARG_SHIP_WHEEL_STATE) ~= 0 then
+			if get_animation_position('WHEEL_STATE') ~= 0 then
 				cylinder(4, v(0,-2-8*uc_trans,-20), v(0,-2-8*uc_trans,-24), v(0,1,0), 1)
 				xref_cylinder(4, v(9,-2-8*uc_trans,1), v(9,-2-8*uc_trans,9), v(0,1,0), 1)
 			end

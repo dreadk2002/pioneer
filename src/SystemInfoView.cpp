@@ -1,23 +1,24 @@
 #include "Pi.h"
-#include "Sector.h"
+#include "galaxy/Sector.h"
 #include "SectorView.h"
 #include "SystemInfoView.h"
 #include "ShipCpanel.h"
 #include "Player.h"
 #include "Polit.h"
 #include "Space.h"
-#include "SystemPath.h"
+#include "galaxy/SystemPath.h"
 #include "Lang.h"
 #include "StringF.h"
+#include "Game.h"
+#include "graphics/Renderer.h"
 
 SystemInfoView::SystemInfoView()
 {
 	SetTransparency(true);
-	m_system = 0;
 	m_refresh = false;
 }
 
-void SystemInfoView::OnBodySelected(SBody *b)
+void SystemInfoView::OnBodySelected(SystemBody *b)
 {
 	{
 		printf("\n");
@@ -25,8 +26,9 @@ void SystemInfoView::OnBodySelected(SBody *b)
 	}
 
 	SystemPath path = m_system->GetPathOf(b);
-	if (Pi::currentSystem->GetPath() == m_system->GetPath()) {
-		Body* body = Space::FindBodyForPath(&path);
+	RefCountedPtr<StarSystem> currentSys = Pi::game->GetSpace()->GetStarSystem();
+	if (currentSys && currentSys->GetPath() == m_system->GetPath()) {
+		Body* body = Pi::game->GetSpace()->FindBodyForPath(&path);
 		if(body != 0)
 			Pi::player->SetNavTarget(body);
 	}
@@ -34,18 +36,18 @@ void SystemInfoView::OnBodySelected(SBody *b)
 	UpdateIconSelections();
 }
 
-void SystemInfoView::OnBodyViewed(SBody *b)
+void SystemInfoView::OnBodyViewed(SystemBody *b)
 {
 	std::string desc, data;
 
 	m_infoBox->DeleteAllChildren();
 	
-	Gui::Fixed *fixed = new Gui::Fixed(600, 200);
-	m_infoBox->PackStart(fixed);
+	Gui::Fixed *outer = new Gui::Fixed(600, 200);
+	m_infoBox->PackStart(outer);
 	Gui::VBox *col1 = new Gui::VBox();
 	Gui::VBox *col2 = new Gui::VBox();
-	fixed->Add(col1, 0, 0);
-	fixed->Add(col2, 300, 0);
+	outer->Add(col1, 0, 0);
+	outer->Add(col2, 300, 0);
 
 #define _add_label_and_value(label, value) { \
 	Gui::Label *l = (new Gui::Label(label))->Color(1.0f,1.0f,0.0f); \
@@ -61,11 +63,11 @@ void SystemInfoView::OnBodyViewed(SBody *b)
 	}
 
 	_add_label_and_value(Lang::MASS, stringf(Lang::N_WHATEVER_MASSES, formatarg("mass", b->mass.ToDouble()), 
-		formatarg("units", std::string(b->GetSuperType() == SBody::SUPERTYPE_STAR ? Lang::SOLAR : Lang::EARTH))));
+		formatarg("units", std::string(b->GetSuperType() == SystemBody::SUPERTYPE_STAR ? Lang::SOLAR : Lang::EARTH))));
 
-	if (b->type != SBody::TYPE_STARPORT_ORBITAL) {
+	if (b->type != SystemBody::TYPE_STARPORT_ORBITAL) {
 		_add_label_and_value(Lang::SURFACE_TEMPERATURE, stringf(Lang::N_CELSIUS, formatarg("temperature", b->averageTemp-273)));
-		_add_label_and_value(Lang::SURFACE_GRAVITY, stringf("%0{f.3} m/s^2", G * b->GetMass()/pow(b->GetRadius(), 2)));
+		_add_label_and_value(Lang::SURFACE_GRAVITY, stringf("%0{f.3} m/s^2", b->CalcSurfaceGravity()));
 	}
 
 	if (b->parent) {
@@ -79,7 +81,7 @@ void SystemInfoView::OnBodyViewed(SBody *b)
 		_add_label_and_value(Lang::PERIAPSIS_DISTANCE, stringf("%0{f.3} AU", b->orbMin.ToDouble()));
 		_add_label_and_value(Lang::APOAPSIS_DISTANCE, stringf("%0{f.3} AU", b->orbMax.ToDouble()));
 		_add_label_and_value(Lang::ECCENTRICITY, stringf("%0{f.2}", b->orbit.eccentricity));
-		if (b->type != SBody::TYPE_STARPORT_ORBITAL) {
+		if (b->type != SystemBody::TYPE_STARPORT_ORBITAL) {
 			_add_label_and_value(Lang::AXIAL_TILT, stringf(Lang::N_DEGREES, formatarg("angle", b->axialTilt.ToDouble() * (180.0/M_PI))));
 			if (b->rotationPeriod != 0) {
 				_add_label_and_value(
@@ -89,8 +91,8 @@ void SystemInfoView::OnBodyViewed(SBody *b)
 		}
 		int numSurfaceStarports = 0;
 		std::string nameList;
-		for (std::vector<SBody*>::iterator i = b->children.begin(); i != b->children.end(); ++i) {
-			if ((*i)->type == SBody::TYPE_STARPORT_SURFACE) {
+		for (std::vector<SystemBody*>::iterator i = b->children.begin(); i != b->children.end(); ++i) {
+			if ((*i)->type == SystemBody::TYPE_STARPORT_SURFACE) {
 				nameList += (numSurfaceStarports ? ", " : "") + (*i)->name;
 				numSurfaceStarports++;
 			}
@@ -107,7 +109,7 @@ void SystemInfoView::OnBodyViewed(SBody *b)
 void SystemInfoView::UpdateEconomyTab()
 {
 	/* Economy info page */
-	StarSystem *s = m_system;
+	StarSystem *s = m_system.Get();
 	std::string data;
 	
 /*	if (s->m_econType) {
@@ -127,7 +129,7 @@ void SystemInfoView::UpdateEconomyTab()
 	data = std::string("#ff0")+std::string(Lang::MAJOR_IMPORTS)+std::string("\n");
 	for (int i=1; i<Equip::TYPE_MAX; i++) {
 		if (s->GetCommodityBasePriceModPercent(i) > 10)
-			crud.push_back(std::string("#fff")+EquipType::types[i].name);
+			crud.push_back(std::string("#fff")+Equip::types[i].name);
 	}
 	if (crud.size()) data += string_join(crud, "\n")+"\n";
 	else data += std::string("#777")+std::string(Lang::NONE)+std::string("\n");
@@ -137,7 +139,7 @@ void SystemInfoView::UpdateEconomyTab()
 	data = std::string("#ff0")+std::string(Lang::MINOR_IMPORTS)+std::string("\n");
 	for (int i=1; i<Equip::TYPE_MAX; i++) {
 		if ((s->GetCommodityBasePriceModPercent(i) > 2) && (s->GetCommodityBasePriceModPercent(i) <= 10))
-			crud.push_back(std::string("#777")+EquipType::types[i].name);
+			crud.push_back(std::string("#777")+Equip::types[i].name);
 	}
 	if (crud.size()) data += string_join(crud, "\n")+"\n";
 	else data += std::string("#777")+std::string(Lang::NONE)+std::string("\n");
@@ -147,7 +149,7 @@ void SystemInfoView::UpdateEconomyTab()
 	data = std::string("#ff0")+std::string(Lang::MAJOR_EXPORTS)+std::string("\n");
 	for (int i=1; i<Equip::TYPE_MAX; i++) {
 		if (s->GetCommodityBasePriceModPercent(i) < -10)
-			crud.push_back(std::string("#fff")+EquipType::types[i].name);
+			crud.push_back(std::string("#fff")+Equip::types[i].name);
 	}
 	if (crud.size()) data += string_join(crud, "\n")+"\n";
 	else data += std::string("#777")+std::string(Lang::NONE)+std::string("\n");
@@ -157,7 +159,7 @@ void SystemInfoView::UpdateEconomyTab()
 	data = std::string("#ff0")+std::string(Lang::MINOR_EXPORTS)+std::string("\n");
 	for (int i=1; i<Equip::TYPE_MAX; i++) {
 		if ((s->GetCommodityBasePriceModPercent(i) < -2) && (s->GetCommodityBasePriceModPercent(i) >= -10))
-			crud.push_back(std::string("#777")+EquipType::types[i].name);
+			crud.push_back(std::string("#777")+Equip::types[i].name);
 	}
 	if (crud.size()) data += string_join(crud, "\n")+"\n";
 	else data += std::string("#777")+std::string(Lang::NONE)+std::string("\n");
@@ -167,7 +169,7 @@ void SystemInfoView::UpdateEconomyTab()
 	data = std::string("#ff0")+std::string(Lang::ILLEGAL_GOODS)+std::string("\n");
 	for (int i=1; i<Equip::TYPE_MAX; i++) {
 		if (!Polit::IsCommodityLegal(s, Equip::Type(i)))
-			crud.push_back(std::string("#777")+EquipType::types[i].name);
+			crud.push_back(std::string("#777")+Equip::types[i].name);
 	}
 	if (crud.size()) data += string_join(crud, "\n")+"\n";
 	else data += std::string("#777")+std::string(Lang::NONE)+std::string("\n");
@@ -176,16 +178,17 @@ void SystemInfoView::UpdateEconomyTab()
 	m_econInfoTab->ResizeRequest();
 }
 
-void SystemInfoView::PutBodies(SBody *body, Gui::Fixed *container, int dir, float pos[2], int &majorBodies, int &starports, float &prevSize)
+void SystemInfoView::PutBodies(SystemBody *body, Gui::Fixed *container, int dir, float pos[2], int &majorBodies, int &starports, float &prevSize)
 {
 	float size[2];
 	float myPos[2];
 	myPos[0] = pos[0];
 	myPos[1] = pos[1];
-	if (body->GetSuperType() == SBody::SUPERTYPE_STARPORT) starports++;
-	if (body->type == SBody::TYPE_STARPORT_SURFACE) return;
-	if (body->type != SBody::TYPE_GRAVPOINT) {
-		BodyIcon *ib = new BodyIcon( (PIONEER_DATA_DIR "/" + std::string(body->GetIcon())).c_str() );
+	if (body->GetSuperType() == SystemBody::SUPERTYPE_STARPORT) starports++;
+	if (body->type == SystemBody::TYPE_STARPORT_SURFACE) return;
+	if (body->type != SystemBody::TYPE_GRAVPOINT) {
+		BodyIcon *ib = new BodyIcon(body->GetIcon());
+		ib->SetRenderer(m_renderer);
 		m_bodyIcons.push_back(std::pair<std::string, BodyIcon*>(body->name, ib));
 		ib->GetSize(size);
 		if (prevSize < 0) prevSize = size[!dir];
@@ -196,7 +199,7 @@ void SystemInfoView::PutBodies(SBody *body, Gui::Fixed *container, int dir, floa
 		myPos[1] += (!dir ? prevSize*0.5 - size[1]*0.5 : 0);
 		container->Add(ib, myPos[0], myPos[1]);
 
-		if (body->GetSuperType() != SBody::SUPERTYPE_STARPORT) majorBodies++;
+		if (body->GetSuperType() != SystemBody::SUPERTYPE_STARPORT) majorBodies++;
 		pos[dir] += size[dir];
 		dir = !dir;
 		myPos[dir] += size[dir];
@@ -207,7 +210,7 @@ void SystemInfoView::PutBodies(SBody *body, Gui::Fixed *container, int dir, floa
 	}
 
 	float prevSizeForKids = size[!dir];
-	for (std::vector<SBody*>::iterator i = body->children.begin();
+	for (std::vector<SystemBody*>::iterator i = body->children.begin();
 	     i != body->children.end(); ++i) {
 		PutBodies(*i, container, dir, myPos, majorBodies, starports, prevSizeForKids);
 	}
@@ -222,16 +225,19 @@ void SystemInfoView::OnClickBackground(Gui::MouseButtonEvent *e)
 	}
 }
 
-void SystemInfoView::SystemChanged(StarSystem *s)
+void SystemInfoView::SystemChanged(const SystemPath &path)
 {
 	DeleteAllChildren();
+	m_tabs = 0;
 
-	m_system = s;
-	if (!s) return;			// Does happen
+	if (!path.IsSystemPath())
+		return;
+	
+	m_system = StarSystem::GetCached(path);
 
 	m_sbodyInfoTab = new Gui::Fixed(float(Gui::Screen::GetWidth()), float(Gui::Screen::GetHeight()-100));
 
-	if (s->m_unexplored) {
+	if (m_system->m_unexplored) {
 		Add(m_sbodyInfoTab, 0, 0);
 
 		std::string _info =
@@ -261,17 +267,17 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 		float pos[2] = { 0, 0 };
 		float psize = -1;
 		majorBodies = starports = 0;
-		PutBodies(s->rootBody, m_econInfoTab, 1, pos, majorBodies, starports, psize);
+		PutBodies(m_system->rootBody, m_econInfoTab, 1, pos, majorBodies, starports, psize);
 
 		majorBodies = starports = 0;
 		pos[0] = pos[1] = 0;
 		psize = -1;
-		PutBodies(s->rootBody, m_sbodyInfoTab, 1, pos, majorBodies, starports, psize);
+		PutBodies(m_system->rootBody, m_sbodyInfoTab, 1, pos, majorBodies, starports, psize);
 
 		majorBodies = starports = 0;
 		pos[0] = pos[1] = 0;
 		psize = -1;
-		PutBodies(s->rootBody, demographicsTab, 1, pos, majorBodies, starports, psize);
+		PutBodies(m_system->rootBody, demographicsTab, 1, pos, majorBodies, starports, psize);
 	}
 
 	std::string _info = stringf(
@@ -279,9 +285,9 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 		formatarg("bodycount", majorBodies),
 		formatarg("body(s)", std::string(majorBodies == 1 ? Lang::BODY : Lang::BODIES)),
 		formatarg("portcount", starports),
-		formatarg("starport(s)", std::string(starports == 1 ? Lang::STARPORT : Lang::STARPORTS)));
+		formatarg("starport(s)", std::string(starports == 1 ? Lang::STARPORT : Lang::COUNT_STARPORTS)));
 	_info += "\n\n";
-	_info += s->GetLongDescription();
+	_info += m_system->GetLongDescription();
 
 	{
 		// astronomical body info tab
@@ -294,7 +300,7 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 		Gui::VScrollBar *scroll = new Gui::VScrollBar();
 		Gui::VScrollPortal *portal = new Gui::VScrollPortal(730);
 		scroll->SetAdjustment(&portal->vscrollAdjust);
-		
+
 		Gui::Label *l = (new Gui::Label(_info))->Color(1.0f,1.0f,0.0f);
 		m_infoBox->PackStart(l);
 		portal->Add(m_infoBox);
@@ -342,20 +348,20 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 		demographicsTab->Add(col1, 200, 350);
 		Gui::Fixed *col2 = new Gui::Fixed();
 		demographicsTab->Add(col2, 400, 350);
-	
+
 		const float YSEP = floor(Gui::Screen::GetFontHeight() * 1.5f);
 
 		col1->Add((new Gui::Label(Lang::SYSTEM_TYPE))->Color(1,1,0), 0, 0);
 		col2->Add(new Gui::Label(m_system->GetShortDescription()), 0, 0);
 		
 		col1->Add((new Gui::Label(Lang::GOVERNMENT_TYPE))->Color(1,1,0), 0, YSEP);
-		col2->Add(new Gui::Label(Polit::GetGovernmentDesc(m_system)), 0, YSEP);
+		col2->Add(new Gui::Label(m_system->GetSysPolit().GetGovernmentDesc()), 0, YSEP);
 		
 		col1->Add((new Gui::Label(Lang::ECONOMY_TYPE))->Color(1,1,0), 0, 2*YSEP);
-		col2->Add(new Gui::Label(Polit::GetEconomicDesc(m_system)), 0, 2*YSEP);
+		col2->Add(new Gui::Label(m_system->GetSysPolit().GetEconomicDesc()), 0, 2*YSEP);
 		
 		col1->Add((new Gui::Label(Lang::ALLEGIANCE))->Color(1,1,0), 0, 3*YSEP);
-		col2->Add(new Gui::Label(Polit::GetAllegianceDesc(m_system)), 0, 3*YSEP);
+		col2->Add(new Gui::Label(m_system->GetSysPolit().GetAllegianceDesc()), 0, 3*YSEP);
 		
 		col1->Add((new Gui::Label(Lang::POPULATION))->Color(1,1,0), 0, 4*YSEP);
 		std::string popmsg;
@@ -366,7 +372,6 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 		else { popmsg = Lang::NO_REGISTERED_INHABITANTS; }
 		col2->Add(new Gui::Label(popmsg), 0, 4*YSEP);
 
-		SystemPath path = m_system->GetPath();
 		col1->Add((new Gui::Label(Lang::SECTOR_COORDINATES))->Color(1,1,0), 0, 5*YSEP);
 		col2->Add(new Gui::Label(stringf("%0{d}, %1{d}, %2{d}", path.sectorX, path.sectorY, path.sectorZ)), 0, 5*YSEP);
 		col1->Add((new Gui::Label(Lang::SYSTEM_NUMBER))->Color(1,1,0), 0, 6*YSEP);
@@ -380,29 +385,28 @@ void SystemInfoView::SystemChanged(StarSystem *s)
 
 void SystemInfoView::Draw3D()
 {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glClearColor(0,0,0,0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_renderer->SetTransform(matrix4x4f::Identity());
+	m_renderer->ClearScreen();
 }
 
 void SystemInfoView::Update()
 {
 	if (m_refresh) {
-		SystemChanged(Pi::GetSelectedSystem());
+		SystemChanged(Pi::sectorView->GetSelectedSystem());
 		m_refresh = false;
 	}
 }
 
 void SystemInfoView::OnSwitchTo()
 {
-	if (Pi::GetSelectedSystem() != m_system)
+	if (!m_system || !Pi::sectorView->GetSelectedSystem().IsSameSystem(m_system->GetPath()))
 		m_refresh = true;
 }
 
 void SystemInfoView::NextPage()
 {
-	m_tabs->OnActivate();
+	if (m_tabs)
+		m_tabs->OnActivate();
 }
 
 void SystemInfoView::UpdateIconSelections()
@@ -411,17 +415,20 @@ void SystemInfoView::UpdateIconSelections()
 	for (std::vector<std::pair<std::string, BodyIcon*> >::iterator it = m_bodyIcons.begin();
 		 it != m_bodyIcons.end(); ++it) {
 			 (*it).second->SetSelected(false);
-		if (Pi::currentSystem->GetPath() == m_system->GetPath() &&
+
+		RefCountedPtr<StarSystem> currentSys = Pi::game->GetSpace()->GetStarSystem();
+		if (currentSys && currentSys->GetPath() == m_system->GetPath() &&
 			Pi::player->GetNavTarget() &&
-			(*it).first == Pi::player->GetNavTarget()->GetLabel())
+			(*it).first == Pi::player->GetNavTarget()->GetLabel()) {
+
 			(*it).second->SetSelected(true);
+		}
 	}
 }
 
 SystemInfoView::BodyIcon::BodyIcon(const char *img) :
 	Gui::ImageRadioButton(0, img, img)
 {
-
 }
 
 void SystemInfoView::BodyIcon::Draw()
@@ -430,13 +437,14 @@ void SystemInfoView::BodyIcon::Draw()
 	if (!GetSelected()) return;
 	float size[2];
 	GetSize(size);
-	glColor3f(0.f, 1.f, 0.f);
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.f, 0.f);
-	glVertex2f(size[0], 0.f);
-	glVertex2f(size[0], size[1]);
-	glVertex2f(0.f, size[1]);
-	glEnd();
+	Color green = Color(0.f, 1.f, 0.f, 1.f);
+	const vector2f vts[] = {
+		vector2f(0.f, 0.f),
+		vector2f(size[0], 0.f),
+		vector2f(size[0], size[1]),
+		vector2f(0.f, size[1]),
+	};
+	m_renderer->DrawLines2D(4, vts, green, Graphics::LINE_LOOP);
 }
 
 void SystemInfoView::BodyIcon::OnActivate()

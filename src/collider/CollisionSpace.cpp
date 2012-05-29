@@ -198,6 +198,12 @@ CollisionSpace::CollisionSpace()
 	m_dynamicObjectTree = 0;
 }
 
+CollisionSpace::~CollisionSpace()
+{
+	if (m_staticObjectTree) delete m_staticObjectTree;
+	if (m_dynamicObjectTree) delete m_dynamicObjectTree;
+}
+
 void CollisionSpace::AddGeom(Geom *geom)
 {
 	m_geoms.push_back(geom);
@@ -250,7 +256,7 @@ void CollisionSpace::CollideRaySphere(const vector3d &start, const vector3d &dir
 	}
 }
 
-void CollisionSpace::TraceRay(const vector3d &start, const vector3d &dir, float len, CollisionContact *c, Geom *ignore)
+void CollisionSpace::TraceRay(const vector3d &start, const vector3d &dir, double len, CollisionContact *c, Geom *ignore)
 {
 	vector3d invDir(1.0/dir.x, 1.0/dir.y, 1.0/dir.z);
 	c->dist = len;

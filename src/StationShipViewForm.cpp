@@ -68,7 +68,7 @@ StationShipViewForm::StationShipViewForm(FormController *controller, int marketI
 	dataBox->PackEnd(new Gui::Label(stringf(Lang::NUMBER_G, formatarg("acceleration", reverse_accel_empty))));
 	dataBox->PackEnd(new Gui::Label(stringf(Lang::NUMBER_G, formatarg("acceleration", reverse_accel_laden))));
 	dataBox->PackEnd(new Gui::Label(" "));
-	dataBox->PackEnd(new Gui::Label(EquipType::types[type.hyperdrive].name));
+	dataBox->PackEnd(new Gui::Label(Equip::types[type.hyperdrive].name));
 	statsBox->PackEnd(dataBox);
 
 
@@ -77,10 +77,10 @@ StationShipViewForm::StationShipViewForm(FormController *controller, int marketI
 
 	int row_size = 5, pos = 0;
 	for (int drivetype = Equip::DRIVE_CLASS1; drivetype <= Equip::DRIVE_CLASS9; drivetype++) {
-		if (type.capacity < EquipType::types[drivetype].mass)
+		if (type.capacity < Equip::types[drivetype].mass)
 			break;
 
-		int hyperclass = EquipType::types[drivetype].pval;
+		int hyperclass = Equip::types[drivetype].pval;
 		// for the sake of hyperspace range, we count ships mass as 60% of original.
 		float range = Pi::CalcHyperspaceRange(hyperclass, type.hullMass + type.capacity);
 
@@ -88,7 +88,7 @@ StationShipViewForm::StationShipViewForm(FormController *controller, int marketI
 		row->PackEnd(cell);
 
 		cell->PackEnd(new Gui::Label(stringf(Lang::CLASS_NUMBER, formatarg("class", hyperclass))));
-		if (type.capacity < EquipType::types[drivetype].mass)
+		if (type.capacity < Equip::types[drivetype].mass)
 			cell->PackEnd(new Gui::Label("---"));
 		else
 			cell->PackEnd(new Gui::Label(stringf(Lang::NUMBER_LY, formatarg("distance", range))));
@@ -130,7 +130,7 @@ void StationShipViewForm::BuyShip()
 	Pi::player->SetMoney(Pi::player->GetMoney() - cost);
 	Pi::player->ResetFlavour(&m_flavour);
 	Pi::player->m_equipment.Set(Equip::SLOT_ENGINE, 0, ShipType::types[m_flavour.type].hyperdrive);
-	Pi::player->UpdateMass();
+	Pi::player->UpdateStats();
 
 	m_station->ReplaceShipOnSale(m_marketIndex, &old);
 

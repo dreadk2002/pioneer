@@ -3,18 +3,20 @@
 
 #include "buildopts.h"
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 #include <sigc++/sigc++.h>
 #include <SDL.h>
 #include <GL/glew.h>
 #include <SDL_image.h>
-#include <float.h>
+#include <cfloat>
 #include <limits>
-#include <time.h>
-#include <stdarg.h>
-#include <stdlib.h>
-
+#include <ctime>
+#include <cstdarg>
+#include <cstdlib>
+#include <cerrno>
+#include <string>
+#include <vector>
 
 /* on unix this would probably become $PREFIX/pioneer */
 #ifndef PIONEER_DATA_DIR
@@ -22,64 +24,37 @@
 #endif /* PIONEER_DATA_DIR */
 
 #ifdef _WIN32
-#include <malloc.h>
-#ifndef __MINGW32__
-#define alloca _alloca
-#define strncasecmp _strnicmp
-#define strcasecmp _stricmp
+#	include <malloc.h>
 
-#ifndef isfinite
+#	ifdef _MSC_VER
+#		pragma warning(disable : 4244) // "conversion from x to x: possible loss of data"
+#		pragma warning(disable : 4800) // int-to-bool "performance warning"
+#	endif
+ 
+#	ifndef __MINGW32__
+#
+#		define alloca _alloca
+#		define strncasecmp _strnicmp
+#		define strcasecmp _stricmp
+#		define snprintf _snprintf
+
+#		ifndef isfinite
 inline int isfinite(double x) { return _finite(x); }
-#endif
-#endif /* __MINGW32__ */
-#endif
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef __MINGW32__
-#define NOMINMAX
-#endif
-#include <windows.h>
-#define snprintf _snprintf
-#endif
-
-#ifdef __MINGW32__
-#undef WINVER
-#define WINVER 0x0500
-#include <w32api.h>
-#define _WIN32_IE IE5
-#endif
-
-#ifdef _WIN32
-
-#ifdef __MINGW32__
-#include <dirent.h>
-#include <sys/stat.h>
-#include <stdexcept>
-#define WINSHLWAPI
-#else /* !__MINGW32__ */
-#include "win32-dirent.h"
-#endif
-
-#include <shlobj.h>
-#include <shlwapi.h>
-
-#else /* !_WIN32 */
-#include <dirent.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#		endif
+#	endif /* __MINGW32__ */
 #endif
 
 #include "fixed.h"
+#include "vector2.h"
 #include "vector3.h"
 #include "Aabb.h"
 #include "matrix4x4.h"
 #include "Color.h"
 #include "mtrand.h"
 
-#include "utils.h"
 #include "FloatComparison.h"
+#include "SmartPtr.h"
+#include "RefCounted.h"
 
 #ifdef NDEBUG 
 #define	PiVerify(x) ((void)(x))
@@ -104,6 +79,7 @@ inline int isfinite(double x) { return _finite(x); }
 template<class T> inline const T& Clamp(const T& x, const T& min, const T& max) { return x > max ? max : (x < min ? min : x); }
 
 #define DEG_2_RAD	0.0174532925
-#define DEG2RAD(x) ((x)*M_PI/180.0)
+inline double DEG2RAD(double x) { return x*(M_PI/180.); }
+inline float  DEG2RAD(float  x) { return x*(float(M_PI)/180.f); }
 
 #endif /* _LIBS_H */

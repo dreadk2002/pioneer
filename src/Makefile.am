@@ -1,7 +1,11 @@
 ## Process this file with automake to produce Makefile.in
-SUBDIRS = collider gui render
+SUBDIRS = collider gui graphics galaxy terrain text
 
 include $(top_srcdir)/Makefile.common
+
+AM_CFLAGS += $(WARN_CFLAGS)
+AM_CPPFLAGS += $(WARN_CPPFLAGS)
+AM_CXXFLAGS += $(WARN_CXXFLAGS)
 
 bin_PROGRAMS = pioneer modelviewer
 noinst_HEADERS = \
@@ -11,34 +15,40 @@ noinst_HEADERS = \
 	BezierCurve.h \
 	Body.h \
 	BufferObject.h \
+	ByteRange.h \
+	Camera.h \
 	CargoBody.h \
 	ChatForm.h \
 	CityOnPlanet.h \
 	Color.h \
 	CommodityTradeWidget.h \
-	CustomSystem.h \
+	CRC32.h \
 	DeadVideoLink.h \
 	DeleteEmitter.h \
 	DynamicBody.h \
+	EquipSet.h \
 	EquipType.h \
 	FaceVideoLink.h \
-	Font.h \
-	FontManager.h \
+	FileSelectorWidget.h \
+	FileSystem.h \
+	FontCache.h \
+	FontConfig.h \
 	Form.h \
 	FormController.h \
 	Frame.h \
 	GalacticView.h \
-	Galaxy.h \
+	Game.h \
+	GameLoaderSaver.h \
 	GameMenuView.h \
 	GeoSphere.h \
-	GeoSphereStyle.h \
 	HyperspaceCloud.h \
 	InfoView.h \
 	IniConfig.h \
 	GameConfig.h \
-	FontConfig.h \
 	KeyBindings.h \
 	Lang.h \
+	LangStrings.inc.h \
+	Light.h \
 	LmrModel.h \
 	LuaBody.h \
 	LuaCargoBody.h \
@@ -50,6 +60,10 @@ noinst_HEADERS = \
 	LuaEventQueue.h \
 	LuaFormat.h \
 	LuaGame.h \
+	LuaLang.h \
+	LuaMatrix.h \
+	LuaVector.h \
+	LuaFixed.h \
 	LuaManager.h \
 	LuaMusic.h \
 	LuaNameGen.h \
@@ -57,7 +71,7 @@ noinst_HEADERS = \
 	LuaPlanet.h \
 	LuaPlayer.h \
 	LuaRand.h \
-	LuaSBody.h \
+	LuaSystemBody.h \
 	LuaSystemPath.h \
 	LuaSerializer.h \
 	LuaShip.h \
@@ -70,15 +84,14 @@ noinst_HEADERS = \
 	LuaUI.h \
 	LuaUtils.h \
 	MarketAgent.h \
+	MathUtil.h \
 	Missile.h \
 	ModelBody.h \
-	MyLuaMathTypes.h \
-	NameGenerator.h \
+	ModManager.h \
 	Object.h \
 	ObjectViewerView.h \
 	PersistSystemData.h \
 	Pi.h \
-	PiLuaClasses.h \
 	Planet.h \
 	Player.h \
 	Polit.h \
@@ -86,7 +99,7 @@ noinst_HEADERS = \
 	Quaternion.h \
 	RefCounted.h \
 	RefList.h \
-	Sector.h \
+	SDLWrappers.h \
 	SectorView.h \
 	Serializer.h \
 	StationAdvertForm.h \
@@ -100,9 +113,11 @@ noinst_HEADERS = \
 	StationShipViewForm.h \
 	StationShipyardForm.h \
 	StringF.h \
+	StringRange.h \
 	Sfx.h \
 	Ship.h \
 	ShipAICmd.h \
+	ShipController.h \
 	ShipCpanel.h \
 	ShipCpanelMultiFuncDisplays.h \
 	ShipFlavour.h \
@@ -114,16 +129,14 @@ noinst_HEADERS = \
 	SpaceStation.h \
 	SpaceStationView.h \
 	Star.h \
-	StarSystem.h \
 	SystemInfoView.h \
-	SystemPath.h \
 	SystemView.h \
-	TextureFont.h \
-	TextureManager.h \
-	VectorFont.h \
+	TerrainBody.h \
 	VideoLink.h \
 	View.h \
 	WorldView.h \
+	WorldViewCamera.h \
+	SmartPtr.h \
 	buildopts.h \
 	fixed.h \
 	gameconsts.h \
@@ -132,36 +145,43 @@ noinst_HEADERS = \
 	mtrand.h \
 	perlin.h \
 	utils.h \
-	vector3.h
+	vector2.h \
+	vector3.h \
+	enum_table.h
 
 pioneer_SOURCES	= \
 	AmbientSounds.cpp \
 	Background.cpp \
 	Body.cpp \
+	Camera.cpp \
 	CargoBody.cpp \
+	Color.cpp \
 	ChatForm.cpp \
 	CityOnPlanet.cpp \
 	CommodityTradeWidget.cpp \
-	CustomSystem.cpp \
+	CRC32.cpp \
 	DeadVideoLink.cpp \
 	DynamicBody.cpp \
 	EquipType.cpp \
 	FaceVideoLink.cpp \
-	Font.cpp \
-	FontManager.cpp \
+	FileSelectorWidget.cpp \
+	FileSourceZip.cpp \
+	FileSystem.cpp \
+	FontCache.cpp \
+	FontConfig.cpp \
 	FormController.cpp \
 	Frame.cpp \
 	GalacticView.cpp \
-	Galaxy.cpp \
+	Game.cpp \
+	GameLoaderSaver.cpp \
 	GameMenuView.cpp \
 	GeoSphere.cpp \
-	GeoSphereStyle.cpp \
 	HyperspaceCloud.cpp \
 	InfoView.cpp \
 	IniConfig.cpp \
 	GameConfig.cpp \
-	FontConfig.cpp \
 	KeyBindings.cpp \
+	Light.cpp \
 	Lang.cpp \
 	LmrModel.cpp \
 	LuaBody.cpp \
@@ -174,6 +194,10 @@ pioneer_SOURCES	= \
 	LuaEventQueue.cpp \
 	LuaFormat.cpp \
 	LuaGame.cpp \
+	LuaLang.cpp \
+	LuaMatrix.cpp \
+	LuaVector.cpp \
+	LuaFixed.cpp \
 	LuaManager.cpp \
 	LuaMusic.cpp \
 	LuaNameGen.cpp \
@@ -181,7 +205,7 @@ pioneer_SOURCES	= \
 	LuaPlanet.cpp \
 	LuaPlayer.cpp \
 	LuaRand.cpp \
-	LuaSBody.cpp \
+	LuaSystemBody.cpp \
 	LuaSystemPath.cpp \
 	LuaSerializer.cpp \
 	LuaShip.cpp \
@@ -194,18 +218,17 @@ pioneer_SOURCES	= \
 	LuaUI.cpp \
 	LuaUtils.cpp \
 	MarketAgent.cpp \
+	MathUtil.cpp \
 	Missile.cpp \
 	ModelBody.cpp \
-	MyLuaMathTypes.cpp \
-	NameGenerator.cpp \
+	ModManager.cpp \
 	ObjectViewerView.cpp \
 	Pi.cpp \
-	PiLuaClasses.cpp \
 	Planet.cpp \
 	Player.cpp \
 	Polit.cpp \
 	Projectile.cpp \
-	Sector.cpp \
+	SDLWrappers.cpp \
 	SectorView.cpp \
 	Serializer.cpp \
 	StationAdvertForm.cpp \
@@ -223,6 +246,7 @@ pioneer_SOURCES	= \
 	Ship-AI.cpp \
 	Ship.cpp \
 	ShipAICmd.cpp \
+	ShipController.cpp \
 	ShipCpanel.cpp \
 	ShipCpanelMultiFuncDisplays.cpp \
 	ShipFlavour.cpp \
@@ -234,44 +258,61 @@ pioneer_SOURCES	= \
 	SpaceStation.cpp \
 	SpaceStationView.cpp \
 	Star.cpp \
-	StarSystem.cpp \
 	SystemInfoView.cpp \
 	SystemView.cpp \
-	TextureFont.cpp \
-	TextureManager.cpp \
-	VectorFont.cpp \
+	TerrainBody.cpp \
+	View.cpp \
 	WorldView.cpp \
+	WorldViewCamera.cpp \
 	main.cpp \
 	mtrand.cpp \
 	perlin.cpp \
-	utils.cpp
+	utils.cpp \
+	enum_table.cpp
 
-pioneer_LDADD = ../contrib/oolua/liboolua.a collider/libcollider.a gui/libgui.a render/librender.a \
-		$(MINGW_LIBS) \
-		$(FREETYPE_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(GL_LIBS) \
-		$(SDL_LIBS) $(SIGC_LIBS) $(LUA_LIBS) $(VORBIS_LIBS) \
-		$(PNG_LIBS)
+pioneer_LDADD = \
+	../contrib/miniz/libminiz.a \
+	collider/libcollider.a \
+	text/libtext.a \
+	gui/libgui.a \
+	graphics/libgraphics.a \
+	galaxy/libgalaxy.a \
+	terrain/libterrain.a
+
+pioneer_LDADD += \
+	$(FREETYPE_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(GL_LIBS) \
+	$(SDL_LIBS) $(SIGC_LIBS) $(LUA_LIBS) $(VORBIS_LIBS) \
+	$(PNG_LIBS)
+
 if !HAVE_LUA
 pioneer_LDADD += ../contrib/lua/liblua.a
 endif
 
 modelviewer_SOURCES = \
-	Font.cpp \
-	IniConfig.cpp \
+	Color.cpp \
+	CRC32.cpp \
+	FileSourceZip.cpp \
+	FileSystem.cpp \
+	FontCache.cpp \
 	FontConfig.cpp \
-	FontManager.cpp \
+	IniConfig.cpp \
+	Lang.cpp \
+	LuaMatrix.cpp \
+	LuaVector.cpp \
+	LuaFixed.cpp \
 	LmrModel.cpp \
 	LuaModelViewer.cpp \
 	LuaUtils.cpp \
-	MyLuaMathTypes.cpp \
+	LuaConstants.cpp \
+	ModManager.cpp \
+	EquipType.cpp \
+	ShipType.cpp \
+	SDLWrappers.cpp \
 	StringF.cpp \
-	TextureFont.cpp \
-	TextureManager.cpp \
-	VectorFont.cpp \
 	perlin.cpp \
-	utils.cpp
-modelviewer_LDADD = collider/libcollider.a gui/libgui.a render/librender.a \
-		    $(MINGW_LIBS) \
+	utils.cpp \
+	enum_table.cpp
+modelviewer_LDADD = ../contrib/miniz/libminiz.a collider/libcollider.a text/libtext.a gui/libgui.a graphics/libgraphics.a terrain/libterrain.a \
 		    $(FREETYPE_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(GL_LIBS) \
 		    $(SDL_LIBS) $(SIGC_LIBS) $(LUA_LIBS) $(PNG_LIBS)
 if !HAVE_LUA
@@ -283,13 +324,27 @@ tests_SOURCES = \
 	StringF.cpp \
 	tests.cpp \
 	test_Frame.cpp \
-	test_StringF.cpp
+	test_StringF.cpp \
+	FileSystem.cpp \
+	FileSystemPosix.cpp \
+	test_FileSystem.cpp
 
 TESTS = tests
  
-tests_LDADD = collider/libcollider.a gui/libgui.a render/librender.a
+tests_LDADD = collider/libcollider.a gui/libgui.a graphics/libgraphics.a terrain/libterrain.a
 
-INCLUDES = -I@top_srcdir@/contrib
+INCLUDES = -isystem @top_srcdir@/contrib
 if !HAVE_LUA
-INCLUDES += -I@top_srcdir@/contrib/lua
+INCLUDES += -isystem @top_srcdir@/contrib/lua
 endif
+
+if BUILD_WIN32
+    pioneer_LDADD += ../win32/src/libwin32.a $(MINGW_LIBS)
+    modelviewer_LDADD += ../win32/src/libwin32.a $(MINGW_LIBS)
+endif
+
+if BUILD_POSIX
+    pioneer_SOURCES += FileSystemPosix.cpp
+    modelviewer_SOURCES += FileSystemPosix.cpp
+endif
+

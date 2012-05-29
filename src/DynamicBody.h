@@ -17,6 +17,7 @@ public:
 	virtual void SetPosition(vector3d p);
 	virtual vector3d GetPosition() const;
 	virtual vector3d GetVelocity() const;
+	matrix4x4d GetTransformRelTo(const Frame *relTo) const;
 	vector3d GetAngVelocity() const;
 	void SetAngVelocity(vector3d v);
 	void SetMesh(ObjMesh *m);
@@ -28,10 +29,9 @@ public:
 	bool IsEnabled() const { return m_enabled; }
 	virtual void Disable();
 	virtual void Enable();
-	virtual double GetMass() const { return m_mass; }
+	virtual double GetMass() const { return m_mass; }	// XXX don't override this
 	virtual void TimeStepUpdate(const float timeStep);
 	void CalcExternalForce();
-	void ApplyAccel(const float timeStep);
 	void UndoTimestep();
 	
 	void SetMass(double);
@@ -39,7 +39,8 @@ public:
 	void AddTorque(const vector3d);
 	void SetForce(const vector3d);
 	void SetTorque(const vector3d);
-	vector3d GetForce() const { return m_force; }
+	vector3d GetLastForce() const { return m_lastForce; }
+	vector3d GetLastTorque() const { return m_lastTorque; }
 	// body-relative forces
 	void AddRelForce(const vector3d);
 	void AddRelTorque(const vector3d);
@@ -48,10 +49,10 @@ public:
 	vector3d GetGravityForce() const { return m_gravityForce; }
 	virtual void UpdateInterpolatedTransform(double alpha);
 
-	virtual void PostLoadFixup();
+	virtual void PostLoadFixup(Space *space);
 protected:
-	virtual void Save(Serializer::Writer &wr);
-	virtual void Load(Serializer::Reader &rd);
+	virtual void Save(Serializer::Writer &wr, Space *space);
+	virtual void Load(Serializer::Reader &rd, Space *space);
 private:
 	// new odeless turd
 	matrix4x4d m_orient; // contains pos
@@ -69,6 +70,9 @@ private:
 	vector3d m_externalForce;
 	vector3d m_atmosForce;
 	vector3d m_gravityForce;	
+	// for time accel reduction fudge
+	vector3d m_lastForce;
+	vector3d m_lastTorque;
 };
 
 #endif /* _DYNAMICBODY_H */

@@ -75,7 +75,7 @@ void CommodityTradeWidget::ShowAll()
 	int NUM_ITEMS = 0;
 	const float YSEP = floor(Gui::Screen::GetFontHeight() * 2.5f);
 	for (int i=Equip::FIRST_COMMODITY; i<=Equip::LAST_COMMODITY; i++) {
-		assert(EquipType::types[i].slot == Equip::SLOT_CARGO);
+		assert(Equip::types[i].slot == Equip::SLOT_CARGO);
 
 		if (m_seller->DoesSell(Equip::Type(i))) {
 				NUM_ITEMS++;
@@ -86,20 +86,20 @@ void CommodityTradeWidget::ShowAll()
 	
 	const float iconOffset = 8.0f;
 	for (int i=Equip::FIRST_COMMODITY, num=0; i<=Equip::LAST_COMMODITY; i++) {
-		assert(EquipType::types[i].slot == Equip::SLOT_CARGO);
+		assert(Equip::types[i].slot == Equip::SLOT_CARGO);
 
 		if (!m_seller->DoesSell(Equip::Type(i))) continue;
 		int stock = m_seller->GetStock(static_cast<Equip::Type>(i));
 
         std::map<Equip::Type,std::string>::iterator icon_iter = s_iconMap.find(Equip::Type(i));
 		if (icon_iter != s_iconMap.end()) {
-			Gui::Image *icon = new Gui::Image((PIONEER_DATA_DIR "/icons/goods/" + (*icon_iter).second + ".png").c_str());
+			Gui::Image *icon = new Gui::Image(("icons/goods/" + (*icon_iter).second + ".png").c_str());
 			innerbox->Add(icon, 0, num*YSEP);
 		}
 
-		Gui::Label *l = new Gui::Label(EquipType::types[i].name);
-		if (EquipType::types[i].description)
-			l->SetToolTip(EquipType::types[i].description);
+		Gui::Label *l = new Gui::Label(Equip::types[i].name);
+		if (Equip::types[i].description)
+			l->SetToolTip(Equip::types[i].description);
 		innerbox->Add(l,42,num*YSEP+iconOffset);
 		Gui::Button *b = new Gui::RepeaterButton(RBUTTON_DELAY, RBUTTON_REPEAT);
 		b->onClick.connect(sigc::bind(sigc::mem_fun(this, &CommodityTradeWidget::OnClickBuy), i));
@@ -112,12 +112,12 @@ void CommodityTradeWidget::ShowAll()
 					format_money(m_seller->GetPrice(static_cast<Equip::Type>(i)))
 					), 200, num*YSEP+iconOffset);
 		
-		snprintf(buf, sizeof(buf), "%dt", stock*EquipType::types[i].mass);
+		snprintf(buf, sizeof(buf), "%dt", stock*Equip::types[i].mass);
 		Gui::Label *stocklabel = new Gui::Label(buf);
 		m_stockLabels[i] = stocklabel;
 		innerbox->Add(stocklabel, 275, num*YSEP+iconOffset);
 		
-		snprintf(buf, sizeof(buf), "%dt", Pi::player->m_equipment.Count(Equip::SLOT_CARGO, static_cast<Equip::Type>(i))*EquipType::types[i].mass);
+		snprintf(buf, sizeof(buf), "%dt", Pi::player->m_equipment.Count(Equip::SLOT_CARGO, static_cast<Equip::Type>(i))*Equip::types[i].mass);
 		Gui::Label *cargolabel = new Gui::Label(buf);
 		m_cargoLabels[i] = cargolabel;
 		innerbox->Add(cargolabel, 325, num*YSEP+iconOffset);
@@ -129,7 +129,7 @@ void CommodityTradeWidget::ShowAll()
 	portal->ShowAll();
 
 	Gui::Fixed *heading = new Gui::Fixed(470, Gui::Screen::GetFontHeight());
-	const float *col = Gui::Theme::Colors::tableHeading;
+	const Color &col = Gui::Theme::Colors::tableHeading;
 	heading->Add((new Gui::Label(Lang::ITEM))->Color(col), 0, 0);
 	heading->Add((new Gui::Label(Lang::PRICE))->Color(col), 200, 0);
 	heading->Add((new Gui::Label(Lang::BUY))->Color(col), 380, 0);
@@ -151,10 +151,10 @@ void CommodityTradeWidget::ShowAll()
 void CommodityTradeWidget::UpdateStock(int commodity_type)
 {
 	char buf[128];
-	snprintf(buf, sizeof(buf), "%dt", Pi::player->m_equipment.Count(Equip::SLOT_CARGO, static_cast<Equip::Type>(commodity_type))*EquipType::types[commodity_type].mass);
+	snprintf(buf, sizeof(buf), "%dt", Pi::player->m_equipment.Count(Equip::SLOT_CARGO, static_cast<Equip::Type>(commodity_type))*Equip::types[commodity_type].mass);
 	m_cargoLabels[commodity_type]->SetText(buf);
 	
-	snprintf(buf, sizeof(buf), "%dt", m_seller->GetStock(static_cast<Equip::Type>(commodity_type))*EquipType::types[commodity_type].mass);
+	snprintf(buf, sizeof(buf), "%dt", m_seller->GetStock(static_cast<Equip::Type>(commodity_type))*Equip::types[commodity_type].mass);
 	m_stockLabels[commodity_type]->SetText(buf);
 }
 

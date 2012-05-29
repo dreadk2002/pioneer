@@ -128,9 +128,12 @@ static int l_equiptype_get_equip_type(lua_State *l)
  *
  * Finds equipment types that match a criteria
  *
- * > equiptypes = EquipType.GetEquipTypes(filter)
+ * > equiptypes = EquipType.GetEquipTypes(slot, filter)
  *
  * Parameters:
+ *
+ *   slot   - a <Constant.EquipSlot> string. Only equipment that may be used
+ *            in this slot will be returned.
  *
  *   filter - an optional function. If specified the function will be called
  *            once for each equipment or cargo type with two parameters:
@@ -169,8 +172,7 @@ static int l_equiptype_get_equip_types(lua_State *l)
 	
 	bool filter = false;
 	if (lua_gettop(l) >= 2) {
-		if (!lua_isfunction(l, 2))
-			luaL_typerror(l, 2, lua_typename(l, LUA_TFUNCTION));
+		luaL_checktype(l, 2, LUA_TFUNCTION); // any type of function
 		filter = true;
 	}
 
@@ -186,7 +188,16 @@ static int l_equiptype_get_equip_types(lua_State *l)
 				lua_pushvalue(l, 2);
 				lua_pushstring(l, name);
 				LuaEquipType::PushToLua(et);
-				pi_lua_protected_call(l, 2, 1);
+				if (int ret = lua_pcall(l, 2, 1, 0)) {
+					const char *errmsg( "Unknown error" );
+					if (ret == LUA_ERRRUN)
+						errmsg = lua_tostring(l, -1);
+					else if (ret == LUA_ERRMEM)
+						errmsg = "memory allocation failure";
+					else if (ret == LUA_ERRERR)
+						errmsg = "error in error handler function";
+					luaL_error(l, "Error in filter function: %s", errmsg);
+				}
 				if (!lua_toboolean(l, -1)) {
 					lua_pop(l, 1);
 					continue;
@@ -194,7 +205,7 @@ static int l_equiptype_get_equip_types(lua_State *l)
 				lua_pop(l, 1);
 			}
 
-			lua_pushinteger(l, lua_objlen(l, -1)+1);
+			lua_pushinteger(l, lua_rawlen(l, -1)+1);
 			lua_pushstring(l, name);
 			lua_rawset(l, -3);
 		}
@@ -209,14 +220,14 @@ template <> const char *LuaObject<LuaUncopyable<EquipType> >::s_type = "EquipTyp
 
 template <> void LuaObject<LuaUncopyable<EquipType> >::RegisterClass()
 {
-	static const luaL_reg l_methods[] = {
+	static const luaL_Reg l_methods[] = {
         { "GetEquipType",  l_equiptype_get_equip_type  },
 		{ "GetEquipTypes", l_equiptype_get_equip_types },
 
 		{ 0, 0 }
 	};
 
-	static const luaL_reg l_attrs[] = {
+	static const luaL_Reg l_attrs[] = {
 		{ "name",      l_equiptype_attr_name       },
 		{ "slot",      l_equiptype_attr_slot       },
 		{ "basePrice", l_equiptype_attr_base_price },

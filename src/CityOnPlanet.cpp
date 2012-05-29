@@ -4,7 +4,9 @@
 #include "SpaceStation.h"
 #include "Planet.h"
 #include "Pi.h"
+#include "Game.h"
 #include "collider/Geom.h"
+#include "graphics/Frustum.h"
 
 #define START_SEG_SIZE CITY_ON_PLANET_RADIUS
 #define MIN_SEG_SIZE 50.0
@@ -26,9 +28,9 @@ struct citybuildinglist_t {
 };
 
 citybuildinglist_t s_buildingLists[MAX_BUILDING_LISTS] = {
-	{ "city_building", 800, 2000, 0, NULL },
-	//{ "city_power", 100, 250, 0, NULL },
-	//{ "city_starport_building", 300, 400, 0, NULL },
+	{ "city_building", 800, 2000, 0, 0 },
+	//{ "city_power", 100, 250, 0, 0 },
+	//{ "city_starport_building", 300, 400, 0, 0 },
 };
 
 #define CITYFLAVOURS 5
@@ -39,19 +41,18 @@ struct cityflavourdef_t {
 } cityflavour[CITYFLAVOURS];
 
 
-static Plane planes[6];
 LmrObjParams cityobj_params;
 
 void CityOnPlanet::PutCityBit(MTRand &rand, const matrix4x4d &rot, vector3d p1, vector3d p2, vector3d p3, vector3d p4)
 {
 	double rad = (p1-p2).Length()*0.5;
-	LmrModel *model;
-	double modelRadXZ;
-	const LmrCollMesh *cmesh;
+	LmrModel *model(0);
+	double modelRadXZ(0);
+	const LmrCollMesh *cmesh(0);
 	vector3d cent = (p1+p2+p3+p4)*0.25;
 
-	cityflavourdef_t *flavour;
-	citybuildinglist_t *buildings;
+	cityflavourdef_t *flavour(0);
+	citybuildinglist_t *buildings(0);
 
 	// pick a building flavour (city, windfarm, etc)
 	for (int flv=0; flv<CITYFLAVOURS; flv++) {
@@ -93,9 +94,10 @@ always_divide:
 		cent = cent.Normalized();
 		double height = m_planet->GetTerrainHeight(cent);
 		/* don't position below sealevel! */
-		if (height - m_planet->GetSBody()->GetRadius() <= 0.0) return;
+		if (height - m_planet->GetSystemBody()->GetRadius() <= 0.0) return;
 		cent = cent * height;
 
+		assert(cmesh);
 		Geom *geom = new Geom(cmesh->geomTree);
 		int rotTimes90 = rand.Int32(4);
 		matrix4x4d grot = rot * matrix4x4d::RotateYMatrix(M_PI*0.5*double(rotTimes90));
@@ -167,6 +169,16 @@ void CityOnPlanet::Init()
 		for (int i=0; i<MAX_BUILDING_LISTS; i++) {
 			lookupBuildingListModels(&s_buildingLists[i]);
 		}
+	}
+}
+
+void CityOnPlanet::Uninit()
+{
+	for (int list=0; list<MAX_BUILDING_LISTS; list++) {
+		for (int build=0; build<s_buildingLists[list].numBuildings; build++) {
+			delete s_buildingLists[list].buildings[build].collMesh;
+		}
+		delete[] s_buildingLists[list].buildings;
 	}
 }
 
@@ -256,13 +268,12 @@ CityOnPlanet::CityOnPlanet(Planet *planet, SpaceStation *station, Uint32 seed)
 				break;
 		}
 
-		vector3d center = (p1+p2+p3+p4)*0.25;
 		PutCityBit(rand, m, p1, p2, p3, p4);
 	}
 	AddStaticGeomsToCollisionSpace();
 }
 
-void CityOnPlanet::Render(const SpaceStation *station, const vector3d &viewCoords, const matrix4x4d &viewTransform)
+void CityOnPlanet::Render(Graphics::Renderer *r, const SpaceStation *station, const vector3d &viewCoords, const matrix4x4d &viewTransform)
 {
 	matrix4x4d rot[4];
 	station->GetRotMatrix(rot[0]);
@@ -278,15 +289,11 @@ void CityOnPlanet::Render(const SpaceStation *station, const vector3d &viewCoord
 		rot[i] = rot[0] * matrix4x4d::RotateYMatrix(M_PI*0.5*double(i));
 	}
 
-	GetFrustum(planes);
-	
-	memset(&cityobj_params, 0, sizeof(LmrObjParams));
-	// this fucking rubbish needs to be moved into a function
-	cityobj_params.argDoubles[1] = Pi::GetGameTime();
-	cityobj_params.argDoubles[2] = Pi::GetGameTime() / 60.0;
-	cityobj_params.argDoubles[3] = Pi::GetGameTime() / 3600.0;
-	cityobj_params.argDoubles[4] = Pi::GetGameTime() / (24*3600.0);
+	Graphics::Frustum frustum = Graphics::Frustum::FromGLState();
+	//modelview seems to be always identity
 
+	memset(&cityobj_params, 0, sizeof(LmrObjParams));
+	cityobj_params.time = Pi::game->GetTime();
 
 	for (std::vector<BuildingDef>::const_iterator i = m_buildings.begin();
 			i != m_buildings.end(); ++i) {
@@ -294,15 +301,9 @@ void CityOnPlanet::Render(const SpaceStation *station, const vector3d &viewCoord
 		if (!(*i).isEnabled) continue;
 
 		vector3d pos = viewTransform * (*i).pos;
-		/* frustum cull */
-		bool cull = false;
-		for (int j=0; j<6; j++) {
-			if (planes[j].DistanceToPoint(pos)+(*i).clipRadius < 0) {
-				cull = true;
-				break;
-			}
-		}
-		if (cull) continue;
+		if (!frustum.TestPoint(pos, (*i).clipRadius))
+			continue;
+
 		matrix4x4f _rot;
 		for (int e=0; e<16; e++) _rot[e] = float(rot[(*i).rotation][e]);
 		_rot[12] = float(pos.x);

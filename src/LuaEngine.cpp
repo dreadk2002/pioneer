@@ -4,6 +4,7 @@
 #include "LuaRand.h"
 #include "Pi.h"
 #include "utils.h"
+#include "FileSystem.h"
 
 /*
  * Interface: Engine
@@ -51,7 +52,7 @@ static int l_engine_meta_index(lua_State *l)
 	 *   stable
 	 */
 	if (strcmp(key, "userdir") == 0) {
-		const std::string& userdir = GetPiUserDir();
+		const std::string &userdir = FileSystem::GetUserDir();
 		lua_pushlstring(l, userdir.c_str(), userdir.size());
 		return 1;
 	}
@@ -77,7 +78,7 @@ void LuaEngine::Register()
 
 	lua_setmetatable(l, -2);
 
-	lua_setfield(l, LUA_GLOBALSINDEX, "Engine");
+	lua_setglobal(l, "Engine");
 	
 	LUA_DEBUG_END(l, 0);
 }

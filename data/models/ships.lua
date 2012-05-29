@@ -1,39 +1,8 @@
-print("REMEMBER TO PORT ship6model!!!");
-
 define_model('missile', {
 	info = {
 		bounding_radius = 4,
 		materials={ 'body' },
 		tags = {'missile'},
-		ship_defs = {
-			{
-				name = 'MISSILE_UNGUIDED',
-				forward_thrust = -4e5,
-				hull_mass=1,
-				price=100
-			}, {
-				name = 'MISSILE_GUIDED',
-				forward_thrust = -2e5,
-				reverse_thrust = 1e5,
-				angular_thrust = 2e4,
-				hull_mass=1,
-				price=100
-			}, {
-				name = 'MISSILE_SMART',
-				forward_thrust = -3e5,
-				reverse_thrust = 1.5e5,
-				angular_thrust = 2e4,
-				hull_mass=1,
-				price=100
-			}, {
-				name = 'MISSILE_NAVAL',
-				forward_thrust = -4e5,
-				reverse_thrust = 2e5,
-				angular_thrust = 2e4,
-				hull_mass=1,
-				price=100
-			}
-		},
 	},
 	static = function(lod)
 		set_material('body', 1,1,1,1)
@@ -88,8 +57,8 @@ define_model('nosewheelunit', {
 		xref_quad(v8, v6, v7, v9)
 		-- SHould use parameter material(2) here but param materials not done yet
 		use_material('matvar2')
-		local flap_ang = 0.5*math.pi*math.clamp(3*get_arg(ARG_SHIP_WHEEL_STATE),0,1)
-		local wheel_ang = 0.5*math.pi*math.clamp(1.5*(get_arg(ARG_SHIP_WHEEL_STATE)-0.34), 0, 1)
+		local flap_ang = 0.5*math.pi*math.clamp(3*get_animation_position('WHEEL_STATE'),0,1)
+		local wheel_ang = 0.5*math.pi*math.clamp(1.5*(get_animation_position('WHEEL_STATE')-0.34), 0, 1)
 		local vrot = 1.5*v(-math.cos(flap_ang), math.sin(flap_ang), 0)
 		xref_quad(v7, v6, v6+vrot, v7+vrot)
 		xref_quad(v7, v7+vrot, v6+vrot, v6)
@@ -148,8 +117,8 @@ define_model('mainwheelunit', {
 		xref_quad(v8, v6, v7, v9)
 		-- SHould use parameter material(2) here but param materials not done yet
 		use_material('matvar2')
-		local flap_ang = 0.5*math.pi*math.clamp(3*get_arg(ARG_SHIP_WHEEL_STATE),0,1)
-		local wheel_ang = 0.5*math.pi*math.clamp(1.5*(get_arg(ARG_SHIP_WHEEL_STATE)-0.34), 0, 1)
+		local flap_ang = 0.5*math.pi*math.clamp(3*get_animation_position('WHEEL_STATE'),0,1)
+		local wheel_ang = 0.5*math.pi*math.clamp(1.5*(get_animation_position('WHEEL_STATE')-0.34), 0, 1)
 		local vrot = 1.5*v(-math.cos(flap_ang), math.sin(flap_ang), 0)
 		xref_quad(v7, v6, v6+vrot, v7+vrot)
 		xref_quad(v7, v7+vrot, v6+vrot, v6)
@@ -168,26 +137,6 @@ define_model('ladybird', {
 		materials={'white','engines','matvar0', 'matvar2',
 		'engine_inside','text'},
 		tags = {'ship'},
-		ship_defs = {
-			{
-				name='Ladybird Starfighter',
-				forward_thrust = -10e6,
-				reverse_thrust = 4e6,
-				up_thrust = 3e6,
-				down_thrust = -3e6,
-				left_thrust = -2e6,
-				right_thrust = 2e6,
-				angular_thrust = 16e6,
-				gun_mounts = { { v(0,-0.5,0), v(0,0,-1) }, { v(0,0,0), v(0,0,1) }, },
-				max_cargo = 60,
-				max_missile = 2,
-				max_laser = 2,
-				capacity = 60,
-				hull_mass = 60,
-				price = 87000,
-				hyperdrive_class = 3,
-			}
-		},
 	},
 	static = function(lod)
 
@@ -238,8 +187,8 @@ define_model('ladybird', {
 		local cpoint_leadingedge2 = leadingedge_mid + tmp
 		-- body flat side piece
 		texture('ships/default_ship_textures/lbside_l.png', v(.5,.5,0), v(0,0,.5), v(0,.1,0))
-		local normal = ((v29-v09):cross(v30-v09)):norm()
-		local cpoint_bodycurve = 0.5*(v29+v30) + 3.0*(v29-v30):cross(normal):norm()
+		local normal = ((v29-v09):cross(v30-v09)):normalised()
+		local cpoint_bodycurve = 0.5*(v29+v30) + 3.0*(v29-v30):cross(normal):normalised()
 		xref_flat(divs, normal,
 		{ v09 },
 		{ v29 },
@@ -287,19 +236,19 @@ define_model('ladybird', {
 	dynamic = function(lod)
 		set_material('matvar0', get_arg_material(0))
 		set_material('matvar2', get_arg_material(2))
-		set_material('engine_inside', lerp_materials(get_arg(ARG_ALL_TIME_MINUTES)*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
+		set_material('engine_inside', lerp_materials(get_time('MINUTES')*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
 		{0, 0, 0, 1, 0, 0, 0, 10, 0, 0, .5 }))
 		set_material('text', 0,0,0,1,0.3,0.3,0.3,5)
 		if lod > 1 then
 			use_material('text')
-			local label = get_arg_string(0)
+			local label = get_label()
 			zbias(1,v(8.9,3.6,.07),v(1.8,1,1))
 			text(label,v(8.9,3.6,.07),v(1.8,1,1),v(-.25,0,-1),1.5, {center=true})
 			zbias(1,v(-8.9,3.6,.07),v(1.8,1,1))
 			text(label,v(-8.9,3.6,.07),v(-1.8,1,1),v(-.25,0,1),1.5, {center=true})
 			zbias(0)
 		end
-		if get_arg(ARG_SHIP_WHEEL_STATE) ~= 0 then
+		if get_animation_position('WHEEL_STATE') ~= 0 then
 			local v35 = v(0.0, -5.0, -13.0);
 			local v36 = v(-15.0, -5.0, 3.0);
 			local v37 = v(15.0, -5.0, 3.0);
@@ -314,196 +263,6 @@ define_model('ladybird', {
 })
 
 
-define_model('__walruswing', {
-	info = {
-		lod_pixels = { 20, 50, 0 },
-		scale = 25,
-		bounding_radius = 2.0,
-		materials = {'matvar0'}
-	},
-	static = function(lod)
-		-- bottom front
-		local v06 = v(0.0, 0.0, 1.0)
-		-- bottom back
-		local v07 = v(0.0, 0.0, -1.0)
-		-- top front
-		local v08 = v(0.0, 1.5, 0.0)
-		-- top back
-		local v09 = v(0.0, 1.5, -1.5)
-		use_material('matvar0')
-		local bend = v(0.175,0,0)
-		xref_quadric_bezier_quad(1,lod*4, v07, 0.5*(v07+v09), v09,
-		0.5*(v06+v07)+bend, bend, 0.5*(v08+v09)+bend,
-		v06, 0.5*(v06+v08), v08)
-		flat(lod*4, v(0,1,0), { 0.5*(v08+v09)+bend, v09 },
-		{ 0.5*(v08+v09)-bend, v08 })
-
-	end,
-	dynamic = function(lod)
-		set_material('matvar0', get_arg_material(0))
-	end
-})
-
-define_model('walrus', {
-	info = {
-		scale = 0.5,
-		bounding_radius = 70,
-		materials = {'matvar0', 'text'},
-		tags = { 'ship' },
-		ship_defs = {
-			{
-				name='Walrus',
-				forward_thrust = -40e6,
-				reverse_thrust = 12e6,
-				up_thrust = 12e6,
-				down_thrust = -6e6,
-				left_thrust = -6e6,
-				right_thrust = 6e6,
-				angular_thrust = 70e6,
-				gun_mounts = { { v(0,-0.5,0), v(0,0,-1) }, { v(0,0,0), v(0,0,1) }, },
-				max_cargo = 320,
-				max_laser = 2,
-				max_missile = 6,
-				capacity = 320,
-				hull_mass = 300,
-				price = 350000,
-				hyperdrive_class = 5,
-			}
-		}
-	},
-	static = function()
-		local v06 = v(-5.0, 10.0, -30.0)
-		-- 6, top four body verts
-		local v07 = v(5.0, 10.0, -30.0)
-		local v08 = v(-5.0, 10.0, 30.0)
-		local v09 = v(5.0, 10.0, 30.0)
-
-		local v10 = v(-11.16025, -0.6698729, -25.0)
-		-- 10, right four body verts
-		local v11 = v(-6.160254, -9.330127, -35.0)
-		local v12 = v(-11.16025, -0.6698729, 35.0)
-		local v13 = v(-6.160254, -9.330127, 30.0)
-
-		local v14 = v(11.16025, -0.6698729, -25.0)
-		-- 14, left four body verts
-		local v15 = v(6.160254, -9.330127, -35.0)
-		local v16 = v(11.16025, -0.6698729, 35.0)
-		local v17 = v(6.160254, -9.330127, 30.0)
-
-		local v18 = v(-5.0, -0.6698729, -60.0)
-		-- 18, front two verts
-		local v19 = v(5.0, -0.6698729, -60.0)
-
-
-		-- 20, top wing
-		local v20 = v(0.0, 10.0, 0.0)
-		local v21 = v(-1.0, 0.0, 0.0)
-
-		local v22 = v(0.0, 1.0, 0.0)
-
-		-- 23, right wing
-		local v24 = v(0.5, -0.8660254, 0.0)
-		local v25 = v(-0.8660254, -0.5, 0.0)
-
-		-- 26, left wing
-		local v27 = v(0.5, 0.8660254, 0.0)
-		local v28 = v(0.8660254, -0.5, 0.0)
-
-		local v29 = v(-0.0, 0.0, 40.0)
-		-- 29, main thruster
-		local v30 = v(-11.0, 0.0, -35.0)
-		-- 30, retro
-		local v31 = v(11.0, 0.0, -35.0)
-
-		local v32 = v(-9.0, 5.0, -30.0)
-		-- 32, right
-		local v33 = v(-12.0, -5.0, 30.0)
-		local v34 = v(12.0, -5.0, -30.0)
-		-- 34, left
-		local v35 = v(9.0, 5.0, 30.0)
-		local v36 = v(0.0, 12.0, -30.0)
-		-- 36, top
-		local v37 = v(0.0, 12.0, 30.0)
-		local v38 = v(0.0, -12.0, -30.0)
-		-- 38, bottom
-		local v39 = v(0.0, -12.0, 30.0)
-
-
-		local v42 = v(-5.0, 10.0, -30.0)
-		-- 6, top four body verts
-		local v43 = v(-11.16025, -0.6698729, 35.0)
-
-		use_material('matvar0')
-		quad(v07, v06, v08, v09)
-		quad(v13, v11, v15, v17)
-		xref_quad(v08, v06, v10, v12)
-		xref_quad(v12, v10, v11, v13)
-		quad(v09, v08, v12, v16)
-		quad(v16, v12, v13, v17)
-
-		quad(v06, v07, v19, v18)
-		quad(v18, v19, v15, v11)
-		xref_tri(v06, v18, v10)
-		xref_tri(v10, v18, v11)
-
-		thruster(v29, v(0,0,1), 50, true)
-		thruster(v30, v(0,0,-1), 35, true)
-		thruster(v31, v(0,0,-1), 35, true)
-		thruster(v32, v(-1,0,0), 25)
-		thruster(v33, v(-1,0,0), 25)
-		thruster(v34, v(1,0,0), 25)
-		thruster(v35, v(1,0,0), 25)
-		thruster(v36, v(0,1,0), 25)
-		thruster(v37, v(0,1,0), 25)
-		thruster(v38, v(0,-1,0), 25)
-		thruster(v39, v(0,-1,0), 25)
-
-		call_model('__walruswing', v20, v(-1,0,0), v(0,1,0), 1.0)
-	end,
-	dynamic = function(lod)
-		local v06 = v(-5.0, 10.0, -30.0)
-		local v07 = v(5.0, 10.0, -30.0)
-		local v08 = v(-5.0, 10.0, 30.0)
-		local v10 = v(-11.16025, -0.6698729, -25.0)
-		local v12 = v(-11.16025, -0.6698729, 35.0)
-		local v14 = v(11.16025, -0.6698729, -25.0)
-		local v16 = v(11.16025, -0.6698729, 35.0)
-		local v20 = v(0.0, 10.0, 0.0)
-		local v23 = v(-8.660254, -5.0, 0.0)
-		local v26 = v(8.660254, -5.0, 0.0)
-
-		local v40 = v(0.0, -9.330127, -30.0)
-		-- 40, nosewheel
-		local v41 = v(0.0, -9.330127, 13.0)
-		-- 41, mainwheel
-		local v54 = (v07 - v14):cross(v16 - v14):norm()
-		local v55 = (v06 - v08):cross(v12 - v08):norm()
-
-		set_material('matvar0', get_arg_material(0))
-		set_material('text', .2,.2,.2,1)
-		use_material('text')
-		geomflag(0x8000)
-		local reg = get_arg_string(0)
-		zbias(1, v16, v54)
-		text(reg, v16, v54, v(0,0,-1), 10.0, {xoffset=1, yoffset=.3})
-		zbias(1, v10, v55)
-		text(reg, v10, v55, v(0,0,1), 10.0, {xoffset=.8, yoffset=.3})
-		geomflag(0)
-		if get_arg(ARG_SHIP_WHEEL_STATE) > 0 then
-			zbias(1, v40, v(0,-1,0))
-			call_model('nosewheelunit', v40, v(-1,0,0), v(0,-1,0), 2.0)
-			call_model('mainwheelunit', v41, v(-1,0,0), v(0,-1,0), 2.0)
-		end
-		zbias(0)
-		local ang = math.pi - 0.5 + 0.5*get_arg(ARG_SHIP_WHEEL_STATE)
-		local xaxis = v(math.sin(ang), math.cos(ang), 0)
-		call_model('__walruswing', v23, xaxis, v(0,0,-1):cross(xaxis), 1.0)
-		ang = 0.5 - 0.5*get_arg(ARG_SHIP_WHEEL_STATE)
-		local xaxis = v(math.sin(ang), math.cos(ang), 0)
-		call_model('__walruswing', v26, xaxis, v(0,0,-1):cross(xaxis), 1.0)
-	end
-})
-
 define_model('flowerfairy', {
 	info = {
 		scale=1.3,
@@ -511,26 +270,6 @@ define_model('flowerfairy', {
 		bounding_radius = 60,
 		materials = {'matvar0','gray','text','engine_inside'},
 		tags = {'ship'},
-		ship_defs = {
-			{
-				name='Flowerfairy Heavy Trader',
-				forward_thrust = -60e6,
-				reverse_thrust = 20e6,
-				up_thrust = 20e6,
-				down_thrust = -10e6,
-				left_thrust = -10e6,
-				right_thrust = 10e6,
-				angular_thrust = 220e6,
-				gun_mounts = { { v(0,-0.5,0), v(0,0,-1) }, { v(0,0,0), v(0,0,1) }, },
-				max_cargo = 500,
-				max_laser = 2,
-				max_missile = 4,
-				capacity = 500,
-				hull_mass = 500,
-				price = 550000,
-				hyperdrive_class = 6,
-			}
-		}
 	},
 	static = function(lod)
 		--	// 6, nose vertices
@@ -614,7 +353,7 @@ define_model('flowerfairy', {
 	end,
 	dynamic = function(lod)
 		set_material('matvar0', get_arg_material(0))
-		set_material('engine_inside', lerp_materials(get_arg(ARG_ALL_TIME_MINUTES)*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
+		set_material('engine_inside', lerp_materials(get_time('MINUTES')*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
 		{0, 0, 0, 1, 0, 0, 0, 10, 0, 0, .5 }))
 		-- 34, gear pos
 		local v34 = v(-5.0, -8.0, -13.0)
@@ -625,19 +364,18 @@ define_model('flowerfairy', {
 		local v39 = v(11.5, -8.0, 13.0)
 		-- 40, dish pos
 		local v40 = v(-0.05, 8.0, 15.0)
-		local leftText = v(-10.0, 0, -6.4)
-		local rightText = v(10.0, 0, -6.4)
-		local reg = get_arg_string(0)
-		-- this means ignore in collision mesh
-		geomflag(0x8000)
-		use_material('text')
-		zbias(1, leftText, v(-1,0,0))
-		text(reg, leftText, v(-1,0,0), v(0,0,1), 4, {center=true})
-		zbias(1, rightText, v(1,0,0))
-		text(reg, rightText, v(1,0,0), v(0,0,-1), 4, {center=true})
-		geomflag(0)
+		if lod > 1 then
+			local leftText = v(-10.0, 0, -6.4)
+			local rightText = v(10.0, 0, -6.4)
+			local reg = get_label()
+			use_material('text')
+			zbias(1, leftText, v(-1,0,0))
+			text(reg, leftText, v(-1,0,0), v(0,0,1), 4, {center=true})
+			zbias(1, rightText, v(1,0,0))
+			text(reg, rightText, v(1,0,0), v(0,0,-1), 4, {center=true})
+		end
 
-		if get_arg(ARG_SHIP_WHEEL_STATE) > 0 then
+		if get_animation_position('WHEEL_STATE') > 0 then
 			zbias(1, v34, v(0,-1,0))
 			call_model('mainwheelunit', v34, v(-1,0,0), v(0,-1,0), .6)
 			call_model('mainwheelunit', v35, v(-1,0,0), v(0,-1,0), .6)
@@ -646,12 +384,6 @@ define_model('flowerfairy', {
 			call_model('mainwheelunit', v38, v(-1,0,0), v(0,-1,0), .5)
 			call_model('mainwheelunit', v39, v(-1,0,0), v(0,-1,0), .5)
 		end
-		--[[
-		PTYPE_ZBIAS, 40, 1, 1,
-		PTYPE_SUBOBJECT, 0x8000, SUB_DISH, 40, 1, 100, 200,
-
-		PTYPE_ZBIAS, 0x8000, 0, 0,
-		--]]
 		zbias(0)
 	end
 })
@@ -663,82 +395,62 @@ define_model('interdictor', {
 		bounding_radius = 54,
 		materials = {'matvar0', 'matvar2', 'engine', 'engine_inside', 'cockpit', 'text'},
 		tags = {'ship'},
-		ship_defs = {
-			{
-				name='Sirius Interdictor',
-				forward_thrust = -24e6,
-				reverse_thrust = 12e6,
-				up_thrust = 6e6,
-				down_thrust = -6e6,
-				left_thrust = -6e6,
-				right_thrust = 6e6,
-				angular_thrust = 120e6,
-				gun_mounts = { { v(0,-0.5,0), v(0,0,-1) }, { v(0,-0.5,0), v(0,0,1) }, },
-				max_cargo = 90,
-				max_laser = 2,
-				max_missile = 8,
-				capacity = 90,
-				hull_mass = 100,
-				price = 160000,
-				hyperdrive_class = 4,
-			}
-		}
 	},
 	static = function(lod)
 		local nose_tip = v(0.0, 0.0, -35.0)
 		--f } },			// 6, nose point
-		local v07 = norm(0.0, 1.0, -0.2)
+		local v07 = unitv(0.0, 1.0, -0.2)
 		--} },			// nose normal
 		local front_lateral = v(-6.0, 0.0, -18.0)
 		--} },			// 8, r edge forward mid
-		local v09 = norm(-0.2, 1.0, -0.1)
-		--} },			// norm
+		local v09 = unitv(-0.2, 1.0, -0.1)
+		--} },
 		local v10 = v(-12.0, 0.0, 2.0)
 		--} },		// 10, r edge back mid
-		local v11 = norm(-0.2, 1.0, -0.1)
-		--} },			// norm
+		local v11 = unitv(-0.2, 1.0, -0.1)
+		--} },
 		local v12 = v(-7.5, 0.0, 25.0)
 		--} },		// 12, r edge back
-		local v13 = norm(0.0, 1.0, 0.2)
-		--} },			// norm
+		local v13 = unitv(0.0, 1.0, 0.2)
+		--} },
 		local v14 = v(0.0, 3.0, -15.0)
 		--} },			// 14, cockpit front
-		local v15 = norm(0.0, 1.0, 0.08)
-		--} },		// norm
+		local v15 = unitv(0.0, 1.0, 0.08)
+		--} },
 		local v16 = v(-1.5, 3.0, -13.5)
 		--} },			// 16, cockpit right
-		local v17 = norm(0.0, 1.0, 0.08)
-		--} },		// norm
+		local v17 = unitv(0.0, 1.0, 0.08)
+		--} },
 		local v18 = v(0.0, 3.0, -10.0)
 		--} },			// 18, cockpit back
-		local v19 = norm(0.0, 1.0, 0.08)
-		--} },		// norm
+		local v19 = unitv(0.0, 1.0, 0.08)
+		--} },
 		local v20 = v(1.5, 3.0, -13.5)
 		--} },		// 20, cockpit left
-		local v21 = norm(0.0, 1.0, 0.08)
-		--} },		// norm
+		local v21 = unitv(0.0, 1.0, 0.08)
+		--} },
 
 		local v22 = v(-6.0, 3.0, 5.0)
 		--} },			// 22, inner right
-		local v23 = norm(-0.2, 1.0, -0.2)
-		--} },			// norm
+		local v23 = unitv(-0.2, 1.0, -0.2)
+		--} },
 		local v24 = v(0.0, 3.0, 5.0)
 		--} },			// 24, inner mid
-		local v25 = norm(0.2, 1.0, -0.2)
-		--} },		// norm
+		local v25 = unitv(0.2, 1.0, -0.2)
+		--} },
 
 		local v26 = v(-2.0, 2.0, -23.0)
 		--} },			// 26, fwd midpoint
-		local v27 = norm(0.0, 1.0, -0.1)
-		--} },		// norm
+		local v27 = unitv(0.0, 1.0, -0.1)
+		--} },
 		local v28 = v(-5.0, 2.5, -5.0)
 		--} },			// 28, right midpoint
-		local v29 = norm(-0.08, 1.0, -0.04)
-		--} },		// norm
+		local v29 = unitv(-0.08, 1.0, -0.04)
+		--} },
 		local v30 = v(-7.0, 2.0, 14.0)
 		--} },		// 30, rear right midpoint
-		local v31 = norm(-0.04, 1.0, 0.1)
-		--} },		// norm
+		local v31 = unitv(-0.04, 1.0, 0.1)
+		--} },
 
 		local v32 = v(-3.0, 3.0, -5.0)
 		--} },			// 32, central midpoint
@@ -916,7 +628,7 @@ define_model('interdictor', {
 			use_material('engine_inside')
 			xref_circle(lvl, v72, v(0,0,1), v(0,1,0), 2.0)
 
-			local retro_norm = ((v80-v78):cross(v77-v78)):norm()
+			local retro_norm = ((v80-v78):cross(v77-v78)):normalised()
 			zbias(1, v77, retro_norm)
 			xref_quad(v77, v78, v80, v79)
 			zbias(0)
@@ -957,17 +669,17 @@ define_model('interdictor', {
 	end,
 	dynamic = function(lod)
 		-- text norms
-		local v95 = norm(-2.0, -2.5, 0.0)
-		local v96 = norm(2.0, -2.5, 0.0)
+		local v95 = unitv(-2.0, -2.5, 0.0)
+		local v96 = unitv(2.0, -2.5, 0.0)
 		local v97 = v(5.0, -2.0, 13.5)
 		local v98 = v(-5.0, -2.0, 13.5)
 
 		set_material('matvar0', get_arg_material(0))
 		set_material('matvar2', get_arg_material(2))
-		set_material('engine_inside', lerp_materials(get_arg(ARG_ALL_TIME_MINUTES)*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
+		set_material('engine_inside', lerp_materials(get_time('MINUTES')*30.0, {0, 0, 0, 1, 0, 0, 0, 10, .5, .5, 1 },
 		{0, 0, 0, 1, 0, 0, 0, 10, 0, 0, .5 }))
 		if lod > 1 then
-			local shipname = get_arg_string(0)
+			local shipname = get_label()
 			use_material('text')
 			zbias(1, v98, v95)
 			text(shipname, v98, v95, v(0,0,1), 2.5, {center=true, yoffset=0.7})
@@ -976,9 +688,9 @@ define_model('interdictor', {
 			use_material('text')
 		end
 
-		if get_arg(ARG_SHIP_WHEEL_STATE) ~= 0 then
+		if get_animation_position('WHEEL_STATE') ~= 0 then
 			-- lights on wingtips
-			local lightphase = math.fmod(get_arg(ARG_ALL_TIME_SECONDS), 1)
+			local lightphase = math.fmod(get_time('SECONDS'), 1)
 			if lightphase > .9 then
 				billboard('smoke.png', 10, v(1,1,1), { v(-14.1, 0, 12) })
 			elseif lightphase > .8 then

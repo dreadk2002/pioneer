@@ -5,7 +5,7 @@
 #include "gui/Gui.h"
 #include "View.h"
 
-#if OBJECTVIEWER
+#if WITH_OBJECTVIEWER
 
 class Body;
 
@@ -18,6 +18,7 @@ public:
 private:
 	float viewingDist;
 	Gui::Label *m_infoLabel;
+	Gui::VBox *m_vbox;
 	const Body* lastTarget;
 	matrix4x4d m_camRot;
 
@@ -30,7 +31,10 @@ private:
 	Gui::TextEntry *m_sbodyLife;
 	Gui::TextEntry *m_sbodyVolcanicity;
 	Gui::TextEntry *m_sbodyMetallicity;
-	void OnChangeGeoSphereStyle();
+	void OnChangeTerrain();
+	void OnRandomSeed();
+	void OnNextSeed();
+	void OnPrevSeed();
 };
 
 #endif

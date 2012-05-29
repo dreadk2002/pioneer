@@ -2,7 +2,7 @@
 #define _LUASTARSYSTEM_H
 
 #include "LuaObject.h"
-#include "StarSystem.h"
+#include "galaxy/StarSystem.h"
 
 // this is a specialisation for the starsystem acquirer. it modifies the
 // refcount so that it doesn't get removed from the system cache while we're
@@ -10,10 +10,10 @@
 template <>
 class LuaAcquirer<StarSystem> {
 public:
-	virtual void Acquire(StarSystem *o) {
+	virtual void OnAcquire(StarSystem *o) {
 		o->IncRefCount();
 	}
-	virtual void Release(StarSystem *o) {
+	virtual void OnRelease(StarSystem *o) {
 		o->DecRefCount();
 	}
 };

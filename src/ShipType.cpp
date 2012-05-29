@@ -1,8 +1,6 @@
 #include "ShipType.h"
 #include "LmrModel.h"
-#include "Serializer.h"
-#include "MyLuaMathTypes.h"
-#include "Pi.h"
+#include "LuaVector.h"
 #include "LuaUtils.h"
 #include "utils.h"
 #include "Lang.h"
@@ -70,14 +68,29 @@ static void _get_int_attrib(lua_State *L, const char *key, int &output,
 	LUA_DEBUG_END(L, 0);
 }
 
-static int _define_ship(lua_State *L, const char *model_name, std::vector<ShipType::Type> &list, ShipType::Tag stag)
+static void _get_vec_attrib(lua_State *L, const char *key, vector3d &output,
+	const vector3d default_output)
+{
+	LUA_DEBUG_START(L);
+	lua_pushstring(L, key);
+	lua_gettable(L, -2);
+	if (lua_isnil(L, -1)) {
+		output = default_output;
+	} else {
+		output = *LuaVector::CheckFromLua(L, -1);
+	}
+	lua_pop(L, 1);
+	LUA_DEBUG_END(L, 0);
+}
+
+int _define_ship(lua_State *L, ShipType::Tag tag, std::vector<ShipType::Type> *list)
 {
 	ShipType s;
-	s.tag = stag;
-	s.lmrModelName = model_name;
+	s.tag = tag;
 
 	LUA_DEBUG_START(L);
-	_get_string_attrib(L, "name", s.name, model_name);
+	_get_string_attrib(L, "name", s.name, "");
+	_get_string_attrib(L, "model", s.lmrModelName, "");
 	_get_float_attrib(L, "reverse_thrust", s.linThrust[ShipType::THRUSTER_REVERSE], 0.0f);
 	_get_float_attrib(L, "forward_thrust", s.linThrust[ShipType::THRUSTER_FORWARD], 0.0f);
 	_get_float_attrib(L, "up_thrust", s.linThrust[ShipType::THRUSTER_UP], 0.0f);
@@ -86,6 +99,8 @@ static int _define_ship(lua_State *L, const char *model_name, std::vector<ShipTy
 	_get_float_attrib(L, "right_thrust", s.linThrust[ShipType::THRUSTER_RIGHT], 0.0f);
 	_get_float_attrib(L, "angular_thrust", s.angThrust, 0.0f);
 	s.angThrust = s.angThrust / 2;		// fudge
+	_get_vec_attrib(L, "front_camera", s.frontCameraOffset, vector3d(0.0));
+	_get_vec_attrib(L, "rear_camera", s.rearCameraOffset, vector3d(0.0));
 
 	for (int i=0; i<Equip::SLOT_MAX; i++) s.equipSlotCapacity[i] = 0;
 	_get_int_attrib(L, "max_cargo", s.equipSlotCapacity[Equip::SLOT_CARGO], 0);
@@ -99,16 +114,22 @@ static int _define_ship(lua_State *L, const char *model_name, std::vector<ShipTy
 	_get_int_attrib(L, "max_hullautorepair", s.equipSlotCapacity[Equip::SLOT_HULLAUTOREPAIR], 1);
 	_get_int_attrib(L, "max_energybooster", s.equipSlotCapacity[Equip::SLOT_ENERGYBOOSTER], 1);
 	_get_int_attrib(L, "max_atmoshield", s.equipSlotCapacity[Equip::SLOT_ATMOSHIELD], 1);
+	_get_int_attrib(L, "max_cabin", s.equipSlotCapacity[Equip::SLOT_CABIN], 50);
 	_get_int_attrib(L, "max_shield", s.equipSlotCapacity[Equip::SLOT_SHIELD], 9999);
 	_get_int_attrib(L, "max_fuelscoop", s.equipSlotCapacity[Equip::SLOT_FUELSCOOP], 1);
+	_get_int_attrib(L, "max_cargoscoop", s.equipSlotCapacity[Equip::SLOT_CARGOSCOOP], 1);
 	_get_int_attrib(L, "max_lasercooler", s.equipSlotCapacity[Equip::SLOT_LASERCOOLER], 1);
 	_get_int_attrib(L, "max_cargolifesupport", s.equipSlotCapacity[Equip::SLOT_CARGOLIFESUPPORT], 1);
 	_get_int_attrib(L, "max_autopilot", s.equipSlotCapacity[Equip::SLOT_AUTOPILOT], 1);
 
 	_get_int_attrib(L, "capacity", s.capacity, 0);
 	_get_int_attrib(L, "hull_mass", s.hullMass, 100);
+	_get_int_attrib(L, "fuel_tank_mass", s.fuelTankMass, 5);
+	_get_float_attrib(L, "thruster_fuel_use", s.thrusterFuelUse, 1.f);
 	_get_int_attrib(L, "price", s.baseprice, 0);
 	s.baseprice *= 100; // in hundredths of credits
+
+	s.equipSlotCapacity[Equip::SLOT_ENGINE] = Clamp(s.equipSlotCapacity[Equip::SLOT_ENGINE], 0, 1);
 
 	{
 		int hyperclass;
@@ -123,17 +144,17 @@ static int _define_ship(lua_State *L, const char *model_name, std::vector<ShipTy
 	lua_pushstring(L, "gun_mounts");
 	lua_gettable(L, -2);
 	if (lua_istable(L, -1)) {
-		for (unsigned int i=0; i<lua_objlen(L,-1); i++) {
+		for (unsigned int i=0; i<lua_rawlen(L,-1); i++) {
 			lua_pushinteger(L, i+1);
 			lua_gettable(L, -2);
-			if (lua_istable(L, -1) && lua_objlen(L,-2) == 2)	{
+			if (lua_istable(L, -1) && lua_rawlen(L,-1) == 2)	{
 				lua_pushinteger(L, 1);
 				lua_gettable(L, -2);
-				s.gunMount[i].pos = *MyLuaVec::checkVec(L, -1);
+				s.gunMount[i].pos = LuaVector::CheckFromLuaF(L, -1);
 				lua_pop(L, 1);
 				lua_pushinteger(L, 2);
 				lua_gettable(L, -2);
-				s.gunMount[i].dir = *MyLuaVec::checkVec(L, -1);
+				s.gunMount[i].dir = LuaVector::CheckFromLuaF(L, -1);
 				lua_pop(L, 1);
 			}
 			lua_pop(L, 1);
@@ -142,44 +163,39 @@ static int _define_ship(lua_State *L, const char *model_name, std::vector<ShipTy
 	lua_pop(L, 1);
 	LUA_DEBUG_END(L, 0);
 
+	//sanity check
+	if (s.name.empty())
+		return luaL_error(L, "Ship has no name");
+
+	if (s.lmrModelName.empty())
+		return luaL_error(L, "Missing model name in ship");
+
+	//this shouldn't necessarily be a fatal problem, could just warn+mark ship unusable
+	//or replace with proxy geometry
+	try {
+		LmrLookupModelByName(s.lmrModelName.c_str());
+	} catch (LmrModelNotFoundException &) {
+		return luaL_error(L, "Model %s is not defined", s.lmrModelName.c_str());
+	}
+
 	ShipType::types[s.name] = s;
-	list.push_back(s.name);
+	list->push_back(s.name);
 	return 0;
 }
 
-static void _define_ships(const char *tag, ShipType::Tag stag, std::vector<ShipType::Type> &list)
+int define_ship(lua_State *L)
 {
-	std::vector<LmrModel*> ship_models;
-	LmrGetModelsWithTag(tag, ship_models);
-	lua_State *L = LmrGetLuaState();
-	int num = 0;
+	return _define_ship(L, ShipType::TAG_SHIP, &ShipType::player_ships);
+}
 
-	LUA_DEBUG_START(L);
+int define_static_ship(lua_State *L)
+{
+	return _define_ship(L, ShipType::TAG_STATIC_SHIP, &ShipType::static_ships);
+}
 
-	for (std::vector<LmrModel*>::iterator i = ship_models.begin();
-			i != ship_models.end(); ++i) {
-		LmrModel *model = *i;
-		model->PushAttributeToLuaStack("ship_defs");
-		if (lua_isnil(L, -1)) {
-			Error("Model %s is tagged as ship but has no ship_defs.",
-					model->GetName());
-		} else if (lua_istable(L, -1)) {
-			// multiple ship-defs for 1 model
-			for (unsigned int j=0; j<lua_objlen(L,-1); j++) {
-				lua_pushinteger(L, j+1);
-				lua_gettable(L, -2);
-				_define_ship(L, model->GetName(), list, stag);
-				num++;
-				lua_pop(L, 1);
-			}
-		} else {
-			Error("Model %s: ships_def is malformed", model->GetName());
-		}
-		lua_pop(L, 1);
-	}
-	printf("ShipType: %d ships with tag '%s'\n", num, tag);
-
-	LUA_DEBUG_END(L, 0);
+int define_missile(lua_State *L)
+{
+	return _define_ship(L, ShipType::TAG_MISSILE, &ShipType::missile_ships);
 }
 
 void ShipType::Init()
@@ -188,49 +204,44 @@ void ShipType::Init()
 	if (isInitted) return;
 	isInitted = true;
 
-	_define_ships("ship", ShipType::TAG_SHIP, player_ships);
-	_define_ships("static_ship", ShipType::TAG_STATIC_SHIP, static_ships);
-	_define_ships("missile", ShipType::TAG_MISSILE, missile_ships);
-}
+	lua_State *l = luaL_newstate();
 
-ShipType::Type ShipType::GetRandomType() {
-	return player_ships[Pi::rng.Int32(player_ships.size())];
-}
+	LUA_DEBUG_START(l);
 
-ShipType::Type ShipType::GetRandomStaticType() {
-	return static_ships[Pi::rng.Int32(static_ships.size())];
-}
+	luaL_requiref(l, "_G", &luaopen_base, 1);
+	luaL_requiref(l, LUA_DBLIBNAME, &luaopen_debug, 1);
+	luaL_requiref(l, LUA_MATHLIBNAME, &luaopen_math, 1);
+	lua_pop(l, 3);
 
-void EquipSet::Save(Serializer::Writer &wr)
-{
-	wr.Int32(Equip::SLOT_MAX);
-	for (int i=0; i<Equip::SLOT_MAX; i++) {
-		wr.Int32(equip[i].size());
-		for (unsigned int j=0; j<equip[i].size(); j++) {
-			wr.Int32(static_cast<int>(equip[i][j]));
-		}
-	}
-}
+	LuaVector::Register(l);
+	LUA_DEBUG_CHECK(l, 0);
 
-/*
- * Should have initialised with EquipSet(ShipType::Type) first
- */
-void EquipSet::Load(Serializer::Reader &rd)
-{
-	const int numSlots = rd.Int32();
-	assert(numSlots <= Equip::SLOT_MAX);
-	for (int i=0; i<numSlots; i++) {
-		const int numItems = rd.Int32();
-		for (int j=0; j<numItems; j++) {
-			if (j < signed(equip[i].size())) {
-				equip[i][j] = static_cast<Equip::Type>(rd.Int32());
-			} else {
-				// equipment slot sizes have changed. just
-				// dump the difference
-				rd.Int32();
-			}
-		}
-	}
-	onChange.emit(Equip::NONE);
+	// provide shortcut vector constructor: v = vector.new
+	lua_getglobal(l, LuaVector::LibName);
+	lua_getfield(l, -1, "new");
+	assert(lua_iscfunction(l, -1));
+	lua_setglobal(l, "v");
+	lua_pop(l, 1); // pop the vector library table
+
+	LUA_DEBUG_CHECK(l, 0);
+
+	// register ship definition functions
+	lua_register(l, "define_ship", define_ship);
+	lua_register(l, "define_static_ship", define_static_ship);
+	lua_register(l, "define_missile", define_missile);
+
+	LUA_DEBUG_CHECK(l, 0);
+
+	// load all ship definitions
+	lua_pushstring(l, PIONEER_DATA_DIR);
+	lua_setglobal(l, "CurrentDirectory");
+	pi_lua_dofile_recursive(l, "ships");
+
+	LUA_DEBUG_END(l, 0);
+
+	lua_close(l);
+
+	if (ShipType::player_ships.empty())
+		Error("No playable ships have been defined! The game cannot run.");
 }
 

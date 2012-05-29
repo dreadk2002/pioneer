@@ -5,25 +5,28 @@
 #include "Ship.h"
 #include "ShipCpanel.h"
 #include "LmrModel.h"
-#include "render/Render.h"
 #include "Lang.h"
 #include "StringF.h"
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 
 class InfoViewPage: public Gui::Fixed {
 public:
-	InfoViewPage(): Gui::Fixed(800, 500) {}
+	InfoViewPage(InfoView *v): Gui::Fixed(800, 500), m_infoView(v) {}
 	virtual void UpdateInfo() = 0;
+
+protected:
+	InfoView *m_infoView;
 };
 
 class MissionPage: public InfoViewPage {
 public:
-	MissionPage() {
-	};
+	MissionPage(InfoView *v) : InfoViewPage(v) {};
 
 	virtual void Show() {
 		UpdateInfo();
 		InfoViewPage::Show();
-		if (Pi::infoView) Pi::infoView->HideSpinner();
+		m_infoView->HideSpinner();
 	}
 
 	virtual ~MissionPage() {
@@ -61,13 +64,12 @@ public:
 		scroll->SetAdjustment(&portal->vscrollAdjust);
 
 		const std::list<const Mission*> &missions = Pi::player->missions.GetAll();
-		Gui::Fixed *innerbox = new Gui::Fixed(760, YSEP*3 * missions.size());
+		Gui::Fixed *innerbox = new Gui::Fixed(760, missions.size());
 
 		float ypos = 0;
 		for (std::list<const Mission*>::const_iterator i = missions.begin(); i != missions.end(); ++i) {
 			SystemPath path = (*i)->location;
-			StarSystem *s = StarSystem::GetCached(path);
-			SBody *sbody = s->GetBodyByPath(&path);
+			RefCountedPtr<StarSystem> s = StarSystem::GetCached(path);
 
 			l = new Gui::Label((*i)->type);
 			innerbox->Add(l, 0, ypos);
@@ -75,7 +77,10 @@ public:
 			l = new Gui::Label((*i)->client);
 			innerbox->Add(l, 80, ypos);
 			
-			l = new Gui::Label(stringf("%0,\n%1 [%2{d},%3{d},%4{d}]", sbody->name.c_str(), s->GetName().c_str(), path.sectorX, path.sectorY, path.sectorZ));
+			if (!path.IsBodyPath())
+				l = new Gui::Label(stringf("%0 [%1{d},%2{d},%3{d}]", s->GetName().c_str(), path.sectorX, path.sectorY, path.sectorZ));
+			else
+				l = new Gui::Label(stringf("%0\n%1 [%2{d},%3{d},%4{d}]", s->GetBodyByPath(&path)->name.c_str(), s->GetName().c_str(), path.sectorX, path.sectorY, path.sectorZ));
 			innerbox->Add(l, 240, ypos);
 			
 			l = new Gui::Label(format_date((*i)->due));
@@ -94,22 +99,25 @@ public:
 
 			ypos += YSEP*3;
 		}
-		Add(portal, 20, 20 + YSEP*3);
-		Add(scroll, 780, 20 + YSEP*3);
-		scroll->ShowAll();
 		portal->Add(innerbox);
-		portal->ShowAll();
+
+		Gui::HBox *body = new Gui::HBox();
+		body->PackEnd(portal);
+		body->PackEnd(scroll);
+		body->ShowAll();
+		Add(body, 20, 20+YSEP*3);
 	}
 };
 
 class CargoPage: public InfoViewPage {
 public:
-	CargoPage() {
-	};
+	CargoPage(InfoView *v) : InfoViewPage(v) {
+		Pi::game->GetPlayer()->m_equipment.onChange.connect(sigc::mem_fun(*this, &CargoPage::HandleEquipChange));
+	}
 
 	virtual void Show() {
 		InfoViewPage::Show();
-		if (Pi::infoView) Pi::infoView->ShowSpinner();
+		m_infoView->ShowSpinner();
 	}
 
 	virtual void UpdateInfo() {
@@ -119,37 +127,65 @@ public:
 		Add(new Gui::Label(Lang::JETTISON), 40, 40+YSEP*2);
 		float ypos = 40 + 3*YSEP;
 		for (int i=1; i<Equip::TYPE_MAX; i++) {
-			if (EquipType::types[i].slot != Equip::SLOT_CARGO) continue;
+			if (Equip::types[i].slot != Equip::SLOT_CARGO) continue;
 			const int gotNum = Pi::player->m_equipment.Count(Equip::SLOT_CARGO, static_cast<Equip::Type>(i));
 			if (!gotNum) continue;
 			Gui::Button *b = new Gui::SolidButton();
 			b->onClick.connect(sigc::bind(sigc::mem_fun(this, &CargoPage::JettisonCargo), static_cast<Equip::Type>(i)));
 			Add(b, 40, ypos);
-			Add(new Gui::Label(EquipType::types[i].name), 70, ypos);
+			Add(new Gui::Label(Equip::types[i].name), 70, ypos);
 			char buf[128];
-			snprintf(buf, sizeof(buf), "%dt", gotNum*EquipType::types[i].mass);
+			snprintf(buf, sizeof(buf), "%dt", gotNum*Equip::types[i].mass);
 			Add(new Gui::Label(buf), 300, ypos);
 			ypos += YSEP;
 		}
+
+		if (Pi::player->m_equipment.Count(Equip::SLOT_CARGO, Equip::WATER) > 0) {
+			Gui::HBox *box = new Gui::HBox();
+			box->SetSpacing(5.0f);
+			Gui::Button *b = new Gui::SolidButton();
+			b->onClick.connect(sigc::mem_fun(this, &CargoPage::Refuel));
+			box->PackEnd(b);
+			box->PackEnd(new Gui::Label(Lang::REFUEL));
+			Add(box, 300, 40);
+			box->ShowAll();
+		}
+
 		ShowChildren();
 	}
 private:
+	void HandleEquipChange(Equip::Type t) {
+		if (Equip::types[t].slot == Equip::SLOT_CARGO) {
+			UpdateInfo();
+		}
+	}
+
 	void JettisonCargo(Equip::Type t) {
 		if (Pi::player->Jettison(t)) {
-			Pi::cpan->MsgLog()->Message("", stringf(Lang::JETTISONED_1T_OF_X, formatarg("commodity", EquipType::types[t].name)));
-			Pi::infoView->UpdateInfo();
+			Pi::cpan->MsgLog()->Message("", stringf(Lang::JETTISONED_1T_OF_X, formatarg("commodity", Equip::types[t].name)));
+			m_infoView->UpdateInfo();
 		}
+	}
+
+	void Refuel() {
+		float currentFuel = Pi::player->GetFuel();
+		if (is_equal_exact(currentFuel, 1.0f)) return;
+
+		Pi::player->m_equipment.Remove(Equip::WATER, 1);
+		Pi::player->SetFuel(currentFuel + 1.0f/Pi::player->GetShipType().fuelTankMass);
+		Pi::player->UpdateStats();
+
+		m_infoView->UpdateInfo();
 	}
 };
 
 class PersonalPage: public InfoViewPage {
 public:
-	PersonalPage() {
-	};
+	PersonalPage(InfoView *v) : InfoViewPage(v) {};
 
 	virtual void Show() {
 		InfoViewPage::Show();
-		if (Pi::infoView) Pi::infoView->ShowSpinner();
+		m_infoView->ShowSpinner();
 	}
 
 	virtual void UpdateInfo() {
@@ -176,7 +212,7 @@ public:
 
 class ShipInfoPage: public InfoViewPage {
 public:
-	ShipInfoPage() {
+	ShipInfoPage(InfoView *v) : InfoViewPage(v) {
 		info1 = new Gui::Label("");
 		info2 = new Gui::Label("");
 		Add(info1, 40, 40);
@@ -186,7 +222,7 @@ public:
 
 	virtual void Show() {
 		InfoViewPage::Show();
-		if (Pi::infoView) Pi::infoView->ShowSpinner();
+		m_infoView->ShowSpinner();
 	}
 
 	virtual void UpdateInfo() {
@@ -215,28 +251,27 @@ public:
 		col2 = "\n\n";
 
 		Equip::Type e = Pi::player->m_equipment.Get(Equip::SLOT_ENGINE);
-		col2 += std::string(EquipType::types[e].name);
+		col2 += std::string(Equip::types[e].name);
 
-		const shipstats_t *stats;
-		stats = Pi::player->CalcStats();
+		const shipstats_t &stats = Pi::player->GetStats();
 		snprintf(buf, sizeof(buf), "\n\n%dt\n"
 					       "%dt\n"
 					       "%dt\n"
-					       "%dt", stats->max_capacity,
-				stats->free_capacity, stats->used_capacity, stats->total_mass);
+					       "%dt", stats.max_capacity,
+				stats.free_capacity, stats.used_capacity, stats.total_mass);
 		col2 += std::string(buf);
 
 		int numLasers = Pi::player->m_equipment.GetSlotSize(Equip::SLOT_LASER);
 		if (numLasers >= 1) {
 			e = Pi::player->m_equipment.Get(Equip::SLOT_LASER, 0);
-			col2 += std::string("\n\n")+EquipType::types[e].name;
+			col2 += std::string("\n\n")+Equip::types[e].name;
 		} else {
 			col2 += "\n\n";
             col2 += std::string(Lang::NO_MOUNTING);
 		}
 		if (numLasers >= 2) {
 			e = Pi::player->m_equipment.Get(Equip::SLOT_LASER, 1);
-			col2 += std::string("\n")+EquipType::types[e].name;
+			col2 += std::string("\n")+Equip::types[e].name;
 		} else {
 			col2 += "\n";
             col2 += std::string(Lang::NO_MOUNTING);
@@ -244,19 +279,34 @@ public:
 
 		col2 += "\n\n";
 		col2 += stringf(Lang::N_LIGHT_YEARS_N_MAX,
-			formatarg("distance", stats->hyperspace_range),
-			formatarg("maxdistance", stats->hyperspace_range_max));
+			formatarg("distance", stats.hyperspace_range),
+			formatarg("maxdistance", stats.hyperspace_range_max));
 
 		for (int i=Equip::FIRST_SHIPEQUIP; i<=Equip::LAST_SHIPEQUIP; i++) {
 			Equip::Type t = Equip::Type(i) ;
-			Equip::Slot s = EquipType::types[t].slot;
+			Equip::Slot s = Equip::types[t].slot;
 			if ((s == Equip::SLOT_MISSILE) || (s == Equip::SLOT_ENGINE) || (s == Equip::SLOT_LASER)) continue;
 			int num = Pi::player->m_equipment.Count(s, t);
 			if (num == 1) {
-				col1 += stringf("%0\n", EquipType::types[t].name);
+				col1 += stringf("%0\n", Equip::types[t].name);
 			} else if (num > 1) {
-				col1 += stringf("%0{d} %1s\n", num, EquipType::types[t].name);
-			}
+				// XXX this needs something more generic
+				switch (t) {
+					case Equip::SHIELD_GENERATOR:
+						col1 += stringf(Lang::X_SHIELD_GENERATORS, formatarg ("quantity", int(num)));
+						break;
+					case Equip::PASSENGER_CABIN:
+						col1 += stringf(Lang::X_PASSENGER_CABINS, formatarg ("quantity", int(num)));
+						break;
+					case Equip::UNOCCUPIED_CABIN:
+						col1 += stringf(Lang::X_UNOCCUPIED_CABINS, formatarg ("quantity", int(num)));
+						break;
+					default:
+						col1 += stringf("%0\n", Equip::types[t].name);
+						break;
+				}
+				col1 += stringf("\n");
+			} 
 		}
 
 		info1->SetText(col1);
@@ -274,19 +324,19 @@ InfoView::InfoView(): View(),
 
 	m_tabs = new Gui::Tabbed();
 
-	InfoViewPage *page = new ShipInfoPage();
+	InfoViewPage *page = new ShipInfoPage(this);
 	m_pages.push_back(page);
 	m_tabs->AddPage(new Gui::Label(Lang::SHIP_INFORMATION), page);
 
-	page = new PersonalPage();
+	page = new PersonalPage(this);
 	m_pages.push_back(page);
 	m_tabs->AddPage(new Gui::Label(Lang::REPUTATION), page);
 	
-	page = new CargoPage();
+	page = new CargoPage(this);
 	m_pages.push_back(page);
 	m_tabs->AddPage(new Gui::Label(Lang::CARGO), page);
 	
-	page = new MissionPage();
+	page = new MissionPage(this);
 	m_pages.push_back(page);
 	m_tabs->AddPage(new Gui::Label(Lang::MISSIONS), page);
 	
@@ -302,10 +352,11 @@ void InfoView::UpdateInfo()
 
 void InfoView::Draw3D()
 {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glClearColor(0.0f,0.2f,0.4f,0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_renderer->SetTransform(matrix4x4f::Identity());
+	//XXX just use a blue background widget
+	m_renderer->SetClearColor(Color(0.f, 0.2f, 0.4f, 0.f));
+	m_renderer->ClearScreen();
+	m_renderer->SetClearColor(Color(0.f));
 }
 
 void InfoView::Update()

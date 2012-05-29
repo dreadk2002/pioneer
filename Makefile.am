@@ -1,11 +1,20 @@
 ## Process this file with automake to produce Makefile.in
-SUBDIRS = contrib src data osx win32
+if BUILD_WIN32
+    PLATFORM_SUBDIRS = win32
+endif
+SUBDIRS = contrib $(PLATFORM_SUBDIRS) src data osx
+
+PATH := @MXE_PATH@:$(PATH)
 
 include $(top_srcdir)/Makefile.common
 
 .PHONY: codedoc
 codedoc:
-	@naturaldocs -i src/ -o HTML codedoc/ -p nd/ -do -s Default Local
+	@naturaldocs -i src/ -i data/libs/ -xi src/data/ -o HTML codedoc/ -p nd/ -do -ro -s Default Local
+
+.PHONY: enums
+enums:
+	python scripts/scan_enums.py -r --pattern=*.h -o src/enum_table.cpp src
 
 EXTRA_DIST = \
 	AUTHORS.txt \

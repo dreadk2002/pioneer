@@ -54,7 +54,7 @@ define_model('hhgear', {
 
 	dynamic = function(lod)
 
-		local rot = get_arg(ARG_SHIP_WHEEL_STATE)
+		local rot = get_animation_position('WHEEL_STATE')
 		call_model('hhwheel', v(0,-10*rot,0),v(1,0,0),v(0,1,0),1)
 		call_model('hhbox', v(0,-10*rot,0), v(1,0,0), v(0,1,0), 1)
 
@@ -148,13 +148,13 @@ define_model('hhmaingear', {
 
 	dynamic = function(lod)
 
-		local rot = get_arg(ARG_SHIP_WHEEL_STATE)
+		local rot = get_animation_position('WHEEL_STATE')
 		call_model('hhrrd', v(5*rot,.1,0),v(1,0,0),v(0,1,0),1)
 		call_model('hhrld', v(-5*rot,.1,0), v(1,0,0), v(0,1,0), 1)
 		call_model('hhlrd', v(5*rot,.1,0),v(1,0,0),v(0,1,0),1)
 		call_model('hhlld', v(-5*rot,.1,0), v(1,0,0), v(0,1,0), 1)
 
-		if get_arg(ARG_SHIP_WHEEL_STATE) > 0 then
+		if get_animation_position('WHEEL_STATE') > 0 then
 
 			call_model('hhgear',v(-16,-11-(3*rot),10.6),v(1,0,0),v(0,1,0),1)
 			call_model('hhgear',v(-21,-11-(3*rot),10.6),v(1,0,0),v(0,1,0),1)
@@ -299,30 +299,6 @@ define_model('hh', {
 		bounding_radius = 77,
 		materials={'steel', 'darksteel', 'medsteel', 'glow', 'rand1', 'rand2', 'glass', 'inside','text1', 'text2'},
 		tags = { 'ship' },
-		ship_defs = {
-			{
-				name='Hammerhead Heavy Freighter',
-				forward_thrust = -14e7,
-				reverse_thrust = 5e7,
-				up_thrust = 5e7,
-				down_thrust = -2e7,
-				left_thrust = -2e7,
-				right_thrust = 2e7,
-				angular_thrust = 50e7,
-				gun_mounts =
-				{
-					{ v(0,-2,-46), v(0,0,-1) },
-					{ v(0,0,0), v(0,0,1) },
-				},
-				max_cargo = 1220,
-				max_laser = 2,
-				max_missile = 12,
-				capacity = 1220,
-				hull_mass = 1000,
-				price = 3e6,
-				hyperdrive_class = 7,
-			}
-		}
 	},
 
 	static = function(lod)
@@ -393,34 +369,34 @@ define_model('hh', {
 	dynamic = function(lod)
 
 		use_material('medsteel')
-		call_model('hhbridge',v(0,0,36*get_arg(ARG_SHIP_WHEEL_STATE)),v(1,0,0),v(0,1,0),1)
+		call_model('hhbridge',v(0,0,36*get_animation_position('WHEEL_STATE')),v(1,0,0),v(0,1,0),1)
 
 		if lod > 2  then
 
 			use_material('medsteel')
 			call_model('hhmaingear',v(0,0,0),v(1,0,0),v(0,1,0),1)
 
-			set_material('glow', lerp_materials(get_arg(1)*0.4,	{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, .5 },
+			set_material('glow', lerp_materials(get_time('SECONDS')*0.4,	{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, .5 },
 			{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, .1 }))
 
-			if get_arg(8) > 0 then
-				call_model('scanner', v(5.467,14.299,(-74.73 + (36*get_arg(ARG_SHIP_WHEEL_STATE)))), v(-1,0,0), v(0,1,0), 3)
-				call_model('scanner', v(-5.467,14.299,(-74.73 + (36*get_arg(ARG_SHIP_WHEEL_STATE)))), v(1,0,0), v(0,1,0), 3)
-				call_model('antenna_1', v(32.212,1.994,(-91 + (36*get_arg(ARG_SHIP_WHEEL_STATE)))), v(1,0,0), v(0,1,0), 4)
+			if get_equipment('SCANNER') then
+				call_model('scanner', v(5.467,14.299,(-74.73 + (36*get_animation_position('WHEEL_STATE')))), v(-1,0,0), v(0,1,0), 3)
+				call_model('scanner', v(-5.467,14.299,(-74.73 + (36*get_animation_position('WHEEL_STATE')))), v(1,0,0), v(0,1,0), 3)
+				call_model('antenna_1', v(32.212,1.994,(-91 + (36*get_animation_position('WHEEL_STATE')))), v(1,0,0), v(0,1,0), 4)
 			end
 
-			if get_arg(7) > 0 then
-				call_model('ecm_1', v(-38.044,0.565,(-78.316 + (36*get_arg(ARG_SHIP_WHEEL_STATE)))), v(0,1,0), v(-1,0,0), 3.5)
-				call_model('ecm_1', v(38.044,0.565,(-78.316 + (36*get_arg(ARG_SHIP_WHEEL_STATE)))), v(0,-1,0), v(1,0,0), 3.5)
+			if get_equipment('ECM') then
+				call_model('ecm_1', v(-38.044,0.565,(-78.316 + (36*get_animation_position('WHEEL_STATE')))), v(0,1,0), v(-1,0,0), 3.5)
+				call_model('ecm_1', v(38.044,0.565,(-78.316 + (36*get_animation_position('WHEEL_STATE')))), v(0,-1,0), v(1,0,0), 3.5)
 			end
 
-			if get_arg(10) > 0 then
+			if get_equipment('LASER', 1) then
 				use_material('darksteel')
 				texture(nil)
-				call_model('hhfgun',v(0,0,36*get_arg(ARG_SHIP_WHEEL_STATE)),v(1,0,0),v(0,1,0),1)
+				call_model('hhfgun',v(0,0,36*get_animation_position('WHEEL_STATE')),v(1,0,0),v(0,1,0),1)
 			end
 
-			if get_arg(11) > 0 then
+			if get_equipment('LASER', 2) then
 				use_material('darksteel')
 				texture(nil)
 				call_model('hhrgun',v(0,0,0),v(1,0,0),v(0,1,0),1)

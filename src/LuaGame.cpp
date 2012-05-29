@@ -4,6 +4,7 @@
 #include "LuaPlayer.h"
 #include "LuaStarSystem.h"
 #include "Pi.h"
+#include "Game.h"
 
 /*
  * Interface: Game
@@ -15,7 +16,7 @@
 
 static int l_game_meta_index(lua_State *l)
 {
-	if (!Pi::IsGameStarted())
+	if (!Pi::game)
 		luaL_error(l, "Can't query game state when game is not started");
 
 	const char *key = luaL_checkstring(l, 2);
@@ -52,7 +53,7 @@ static int l_game_meta_index(lua_State *l)
 	 *  stable
 	 */
 	if (strcmp(key, "system") == 0) {
-		LuaStarSystem::PushToLua(Pi::currentSystem);
+		LuaStarSystem::PushToLua(Pi::game->GetSpace()->GetStarSystem().Get());
 		return 1;
 	}
 
@@ -70,7 +71,7 @@ static int l_game_meta_index(lua_State *l)
 	 *  stable
 	 */
 	if (strcmp(key, "time") == 0) {
-		lua_pushnumber(l, Pi::GetGameTime());
+		lua_pushnumber(l, Pi::game->GetTime());
 		return 1;
 	}
 
@@ -94,7 +95,7 @@ void LuaGame::Register()
 
 	lua_setmetatable(l, -2);
 
-	lua_setfield(l, LUA_GLOBALSINDEX, "Game");
+	lua_setglobal(l, "Game");
 	
 	LUA_DEBUG_END(l, 0);
 }

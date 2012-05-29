@@ -1,16 +1,23 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include <list>
 #include "libs.h"
-#include "Ship.h"
-#include "StarSystem.h"
-#include "RefList.h"
+#include <list>
 #include "HyperspaceCloud.h"
 #include "MarketAgent.h"
+#include "RefList.h"
+#include "Ship.h"
+#include "ShipController.h"
+#include "galaxy/StarSystem.h"
+
+namespace Graphics { class Renderer; }
 
 struct Mission : RefItem<Mission> {
-	enum MissionState { ACTIVE, COMPLETED, FAILED };
+	enum MissionState { // <enum scope='Mission' name=MissionStatus>
+		ACTIVE,
+		COMPLETED,
+		FAILED,
+	};
 
 	std::string  type;
 	std::string  client;
@@ -24,44 +31,17 @@ class Player: public Ship, public MarketAgent {
 public:
 	OBJDEF(Player, Ship, PLAYER);
 	Player(ShipType::Type shipType);
-	Player() { m_mouseActive = false; }
-	virtual ~Player();
-	void PollControls(const float timeStep);
-	virtual void Render(const vector3d &viewCoords, const matrix4x4d &viewTransform);
+	Player() { }; //default constructor used before Load
 	virtual void SetDockedWith(SpaceStation *, int port);
-	void StaticUpdate(const float timeStep);
-	enum FlightControlState { CONTROL_MANUAL, CONTROL_FIXSPEED, CONTROL_AUTOPILOT };
-	FlightControlState GetFlightControlState() const { return m_flightControlState; }
-	void SetFlightControlState(FlightControlState s);
-	double GetSetSpeed() const { return m_setSpeed; }
 	virtual bool OnDamage(Object *attacker, float kgDamage);
 	virtual void OnHaveKilled(Body *guyWeKilled);
 	int GetKillCount() const { return m_knownKillCount; }
 	virtual bool SetWheelState(bool down); // returns success of state change, NOT state itself
 	virtual bool FireMissile(int idx, Ship *target);
 	virtual void SetAlertState(Ship::AlertState as);
-	bool IsAnyThrusterKeyDown();
-	void SetNavTarget(Body* const target);
-	Body *GetNavTarget() const { return m_navTarget; }
-	void SetCombatTarget(Body* const target);
-	Body *GetCombatTarget() const { return m_combatTarget; }
-	virtual void NotifyDeleted(const Body* const deletedBody);
-
-	// test code
-	virtual void TimeStepUpdate(const float timeStep);
-	vector3d GetAccumTorque() { return m_accumTorque; }
-	vector3d m_accumTorque;
-	vector3d GetMouseDir() { return m_mouseDir; }
-
-	double m_mouseAcc;
+	virtual void NotifyRemoved(const Body* const removedBody);
 
 	RefList<Mission> missions;
-
-	void SetFollowCloud(HyperspaceCloud *cloud) { m_followCloud = cloud; }
-	void ClearFollowCloud() { m_followCloud = 0; }
-	HyperspaceCloud *GetFollowCloud() { return m_followCloud; }
-
-	virtual void PostLoadFixup();
 
 	/* MarketAgent stuff */
 	int GetStock(Equip::Type t) const { assert(0); return 0; }
@@ -69,27 +49,29 @@ public:
 	bool CanSell(Equip::Type t, bool verbose) const;
 	bool DoesSell(Equip::Type t) const { return true; }
 	Sint64 GetPrice(Equip::Type t) const;
+
+	PlayerShipController *GetPlayerController() const;
+	//XXX temporary things to avoid causing too many changes right now
+	Body *GetCombatTarget() const;
+	Body *GetNavTarget() const;
+	Body *GetSetSpeedTarget() const;
+	void SetCombatTarget(Body* const target, bool setSpeedTo = false);
+	void SetNavTarget(Body* const target, bool setSpeedTo = false);
+
 protected:
-	virtual void Save(Serializer::Writer &wr);
-	virtual void Load(Serializer::Reader &rd);
+	virtual void Save(Serializer::Writer &wr, Space *space);
+	virtual void Load(Serializer::Reader &rd, Space *space);
+
+	virtual void OnEnterSystem();
+	virtual void OnEnterHyperspace();
+
 	/* MarketAgent stuff */
 	void Bought(Equip::Type t);
 	void Sold(Equip::Type t);
+
 private:
-	vector3d m_mouseDir;
-	double m_mouseX, m_mouseY;
-	bool m_mouseActive;
-	bool polledControlsThisTurn;
-	enum FlightControlState m_flightControlState;
-	double m_setSpeed;
 	int m_killCount;
 	int m_knownKillCount; // updated on docking
-	Body* m_navTarget;
-	Body* m_combatTarget;
-
-	HyperspaceCloud *m_followCloud;
-
-	int m_combatTargetIndex, m_navTargetIndex, m_followCloudIndex; // deserialisation
 };
 
 #endif /* _PLAYER_H */

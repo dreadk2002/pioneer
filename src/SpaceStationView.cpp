@@ -10,7 +10,7 @@
 SpaceStationView::SpaceStationView(): View()
 {
 	Gui::Label *l = new Gui::Label(Lang::COMMS_LINK);
-	l->Color(1,.7,0);
+	l->Color(1,.7f,0);
 	m_rightRegion2->Add(l, 10, 0);
 
 	SetTransparency(false);
@@ -30,6 +30,7 @@ SpaceStationView::SpaceStationView(): View()
 	m_statusBox->Add(new Gui::Label(std::string("#007")+std::string(Lang::FREE)), 210, 4*YSEP);
 	m_statusBox->Add(new Gui::Label(std::string("#007")+std::string(Lang::CARGO_SPACE)), 0, 5*YSEP);
 	m_statusBox->Add(new Gui::Label(std::string("#007")+std::string(Lang::SHIP_EQUIPMENT)), 0, 6*YSEP);
+	m_statusBox->Add(new Gui::Label(std::string("#007")+std::string(Lang::CABINS)), 0, 7*YSEP);
 
 	m_money = new Gui::Label("");
 	m_statusBox->Add(m_money, 210, 0);
@@ -42,6 +43,12 @@ SpaceStationView::SpaceStationView(): View()
 	
 	m_equipmentMass = new Gui::Label("");
 	m_statusBox->Add(m_equipmentMass, 130, 6*YSEP);
+	
+	m_cabinsUsed = new Gui::Label("");
+	m_statusBox->Add(m_cabinsUsed, 130, 7*YSEP);
+	
+	m_cabinsFree = new Gui::Label("");
+	m_statusBox->Add(m_cabinsFree, 210, 7*YSEP);
 	
 	m_legalstatus = new Gui::Label(Lang::CLEAN);
 	m_statusBox->Add(m_legalstatus, 210, 2*YSEP);
@@ -71,6 +78,8 @@ SpaceStationView::SpaceStationView(): View()
 SpaceStationView::~SpaceStationView()
 {
 	delete m_formController;
+	Remove(m_formStack);
+	delete m_formStack;
 	m_undockConnection.disconnect();
 }
 
@@ -79,15 +88,21 @@ void SpaceStationView::Update()
 	char buf[64];
 	m_money->SetText(format_money(Pi::player->GetMoney()));
 
-	const shipstats_t *stats = Pi::player->CalcStats();
-	snprintf(buf, sizeof(buf), "%dt", stats->used_capacity - stats->used_cargo);
+	const shipstats_t &stats = Pi::player->GetStats();
+	snprintf(buf, sizeof(buf), "%dt", stats.used_capacity - stats.used_cargo);
 	m_equipmentMass->SetText(buf);
 	
-	snprintf(buf, sizeof(buf), "%dt", stats->used_cargo);
+	snprintf(buf, sizeof(buf), "%dt", stats.used_cargo);
 	m_cargoSpaceUsed->SetText(buf);
 		
-	snprintf(buf, sizeof(buf), "%dt", stats->free_capacity);
+	snprintf(buf, sizeof(buf), "%dt", stats.free_capacity);
 	m_cargoSpaceFree->SetText(buf);
+
+	snprintf(buf, sizeof(buf), "%d", Pi::player->m_equipment.Count(Equip::SLOT_CABIN, Equip::PASSENGER_CABIN));
+	m_cabinsUsed->SetText(buf);
+		
+	snprintf(buf, sizeof(buf), "%d", Pi::player->m_equipment.Count(Equip::SLOT_CABIN, Equip::UNOCCUPIED_CABIN));
+	m_cabinsFree->SetText(buf);
 
 	if (m_formStack->Size() > 1)
 		m_backButtonBox->Show();
@@ -120,7 +135,7 @@ void SpaceStationView::RefreshForForm(Form *f)
 			FaceForm *form = static_cast<FaceForm*>(f);
 
 			if (!form->GetFaceSeed())
-				form->SetFaceSeed(Pi::player->GetDockedWith()->GetSBody()->seed);
+				form->SetFaceSeed(Pi::player->GetDockedWith()->GetSystemBody()->seed);
 
 			if (!m_videoLink || form->GetFaceFlags() != m_videoLink->GetFlags() ||
 				form->GetFaceSeed() != m_videoLink->GetSeed()) {

@@ -1,35 +1,6 @@
 --
 -- Don't add models to this! Put them in ./models/
 --
-dofile(CurrentDirectory .. "/pienums.lua")
-
--- get_arg() indices
-ARG_ALL_TIME_SECONDS = 1
-ARG_ALL_TIME_MINUTES = 2
-ARG_ALL_TIME_HOURS = 3
-ARG_ALL_TIME_DAYS = 4
-
-ARG_STATION_BAY1_STAGE = 6
-ARG_STATION_BAY1_POS   = 10
-
-ARG_SHIP_WHEEL_STATE = 0
-ARG_SHIP_EQUIP_SCOOP = 5
-ARG_SHIP_EQUIP_ENGINE = 6
-ARG_SHIP_EQUIP_ECM = 7
-ARG_SHIP_EQUIP_SCANNER = 8
-ARG_SHIP_EQUIP_ATMOSHIELD = 9
-ARG_SHIP_EQUIP_LASER0 = 10
-ARG_SHIP_EQUIP_LASER1 = 11
-ARG_SHIP_EQUIP_MISSILE0 = 12
-ARG_SHIP_EQUIP_MISSILE1 = 13
-ARG_SHIP_EQUIP_MISSILE2 = 14
-ARG_SHIP_EQUIP_MISSILE3 = 15
-ARG_SHIP_EQUIP_MISSILE4 = 16
-ARG_SHIP_EQUIP_MISSILE5 = 17
-ARG_SHIP_EQUIP_MISSILE6 = 18
-ARG_SHIP_EQUIP_MISSILE7 = 19
-ARG_SHIP_FLIGHT_STATE = 20
-
 
 -- First some useful utility functions! :D
 
@@ -38,9 +9,9 @@ math.clamp = function(v, min, max)
 end
 
 function cuboid(pos, size)
-	local sx = v(size:x(),0,0)
-	local sy = v(0,size:y(),0)
-	local sz = v(0,0,size:z())
+	local sx = v(size.x,0,0)
+	local sy = v(0,size.y,0)
+	local sz = v(0,0,size.z)
 	quad(pos, pos+sy, pos+sy+sx, pos+sx)
 	quad(pos+sy, pos+sy+sz, pos+sy+sx+sz, pos+sy+sx)
 	quad(pos, pos+sz, pos+sz+sy, pos+sy)
@@ -96,11 +67,9 @@ function lerp_materials(a, m1, m2)
 	return out
 end
 
---dofile "models/adverts.lua"
+--load_lua "models/adverts.lua"
 load_lua(CurrentDirectory .. "/sub_models")
 load_lua(CurrentDirectory .. "/models")
-
-print("If you see Error IMG_Load below, delete your ~/.pioneer/model_cache folder.");
 
 poo = 0
 define_model('test', {
@@ -114,8 +83,8 @@ define_model('test', {
 		set_material("red", 1,0,0,1)
 		set_material("shinyred", 1,0,0,1, 1,1,1,50)
 		use_material("red")
-		sphere(4, Matrix.translate(v(-2,0,0)))
-		sphere_slice(20,10,3.141*0.1,3.141*0.9, Matrix.translate(v(0,4,0)) * Matrix.orient(v(0,0,0), v(-1,0,0), v(0,-1,0)))
+		sphere(4, matrix.translate(v(-2,0,0)))
+		sphere_slice(20,10,3.141*0.1,3.141*0.9, matrix.translate(v(0,4,0)) * matrix.pose(v(0,0,0), v(-1,0,0), v(0,-1,0)))
 --		texture("concrete.png", v(0.25,0.25,0), v(0.2,0,0), v(0,-0.5,0))
 		xref_flat(16, v(0,0,1),
 			{v(4,0,0)}, -- straight line bit
@@ -126,7 +95,7 @@ define_model('test', {
 			)
 		zbias(1, v(0,5,0), v(0,0,1))
 		geomflag(0x8000)
-		text("LOD: " .. tostring(lod), v(0,5,0), v(0,0,1), v(1,1,0):norm(), 1.0)
+		text("LOD: " .. tostring(lod), v(0,5,0), v(0,0,1), v(1,1,0):normalised(), 1.0)
 		geomflag(0)
 		zbias(0)
 		use_material("red")
@@ -179,7 +148,7 @@ define_model('test', {
 		xref_cylinder(16, v(-8,0,0), v(-8,5,0), v(1,0,0), math.abs(math.sin(poo)))
 		circle(9, v(5*math.sin(poo),5*math.cos(poo),0), v(0,0,1), v(1,0,0), 1.0)
 
-		local ang = 2*math.pi*get_arg(ARG_SHIP_WHEEL_STATE)
+		local ang = 2*math.pi*get_animation_position('WHEEL_STATE')
 		--call_model("blob", v(0,0,-20), v(1,0,0), v(1,1,0),1.0)
 		billboard('smoke.png', 5, v(.5,.5,1), { v(0,0,0), v(10,3,0) })
 	end
@@ -239,14 +208,14 @@ define_model('tombstone', {
 		local v17 = v(0, 0.5, 0.1)
 		use_material('text')
 		zbias(1, v16, v(0,0,-1))
-		text(get_arg_string(0), v16, v(0,0,-1), v(-1,0,0), .1, {center=true})
+		text(get_label(), v16, v(0,0,-1), v(-1,0,0), .1, {center=true})
 		zbias(1, v17, v(0,0,1))
-		text(get_arg_string(0), v17, v(0,0,1), v(1,0,0), .1, {center=true})
+		text(get_label(), v17, v(0,0,1), v(1,0,0), .1, {center=true})
 		zbias(0)
 	end
 })
 
-m = Matrix.rotate(math.pi*0.25,v(1,1,1))
+m = matrix.rotate(math.pi*0.25,v(1,1,1))
 --m:print()
 m = m:inverse()
 --m:print()
@@ -255,25 +224,25 @@ a = (m*v(1,0,0))
 
 define_model('cargo', {
 	info = {
-			lod_pixels = {20, 50, 0},
-			bounding_radius = 1.5,
-			materials = {'body', 'text'}
-		},
+		lod_pixels = {1, 5, 15, 0},
+		bounding_radius = 1,
+		materials = {'body', 'text'}
+	},
 	static = function(lod)
 		local divs = 8*lod
 		set_material('body', .5,.5,.5,1, 0,0,0, 0, 0,0,0)
 		set_material('text', 1,0,0,1, 0,0,0, 0, 0,0,0)
-		local top = v(0,1,0)
-		local bottom = v(0,-1,0)
+		local top = v(0,0.25,0)
+		local bottom = v(0,-0.25,0)
 		use_material('body')
-		cylinder(divs, top, bottom, v(1,0,0), 1.0)
+		cylinder(divs, top, bottom, v(0.25,0,0), 0.25)
 	end,
 	dynamic = function(lod)
 		if lod == 3 then
 			local textpos = v(0,1,0)
 			use_material('text')
 			zbias(1, textpos, v(0,1,0))
-			text(get_arg_string(0), textpos, v(0,1,0), v(1,0,0), 0.1, {center=true})
+			text(get_label(), textpos, v(0,1,0), v(1,0,0), 0.1, {center=true})
 		end
 	end
 })

@@ -26,31 +26,10 @@ static BOOL   gFinderLaunch;
 
 @implementation SDLMain
 
-// Set the working directory to the Resources folder in the app bundle
-- (void) setupWorkingDirectory:(BOOL)shouldChdir
-{
-    if (shouldChdir)
-    {
-        char parentdir[MAXPATHLEN];
-        CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-        CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
-        if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN)) {
-            chdir(parentdir);   /* chdir to the binary app's parent */
-        }
-        CFRelease(url);
-        CFRelease(url2);
-    }
-    
-    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:resourcePath];
-}
-
 // Called when the internal event loop has just started running
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
     int status;
-
-    [self setupWorkingDirectory:gFinderLaunch];
 
     // Hand off to main application code
     status = SDL_main (gArgc, gArgv);
@@ -124,9 +103,7 @@ static BOOL   gFinderLaunch;
 
     img = [NSImage imageNamed: @"pioneer-logo.icns"];
     options = [NSDictionary dictionaryWithObjectsAndKeys:
-               @PIONEER_VERSION, @"Version",
                img, @"ApplicationIcon",
-               @"pioneer", @"ApplicationVersion",
                @"Copyright (C) 2011 - See AUTHORS.txt", @"Copyright",
                nil];
 
@@ -161,7 +138,7 @@ int main (int argc, char * argv[])
         gFinderLaunch = NO;
     }
 
-    NSApplicationMain (argc, argv);
+    NSApplicationMain (argc, (const char **)argv);
     return 0;
 }
 
