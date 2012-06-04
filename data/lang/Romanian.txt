@@ -123,6 +123,9 @@ BULLETIN_BOARD
     Avizier
 WELCOME_TO_SOMEWHERE
     Bine aţi venit la %station
+# Urmatoarea traducere nu trebuie sa fie o traducere mot-a-mot. Puteti
+# scrie orice vreti aici. Va aparea in orice statie spatiala
+# din toata galaxia.
 SPACESTATION_LONG_WELCOME_MESSAGE
     Bine aţi venit pe această staţie spaţială. Avem rapoarte de vandalism şi grafitti pe avizier. Daca observaţi ca vreun mesaj vă induce în eroare, este scris greşit sau pur şi simplu lipseşte, vă rugăm să anunţaţi un membru al personalului.\nOxigenul este momentan gratuit.
 REQUEST_LAUNCH
@@ -171,6 +174,8 @@ CANCEL
     Anulare
 SELECT_FILENAME_TO_SAVE
     Selectaţi un fişier peste care să salvaţi sau introduceţi un nou nume de fişier
+CANT_SAVE_IN_HYPERSPACE
+	Nu puteţi salva jocul cât timp sunteţi în hiperspaţiu
 GAME_SAVED_TO
     "Jocul salvat drept "
 SELECT_FILENAME_TO_LOAD
@@ -181,6 +186,8 @@ GAME_LOAD_CORRUPT
     Acest joc salvat nu poate fi încărcat deoarece conţine erori.
 GAME_LOAD_CANNOT_OPEN
     Fişierul acestui joc salvat nu poate fi deschis din cauza lipsei permisiunilor sau ceva asemănător...
+GAME_SAVE_CANNOT_WRITE
+	Fişierul acestui joc salvat nu poate fi scris din cauza unei erori de sistem.
 VERY_LOW
     Foarte mic
 LOW
@@ -243,6 +250,10 @@ MOUSE_INPUT
     Comenzi mouse
 INVERT_MOUSE_Y
     Inversează axa Y a mouse-ului
+HUD
+	Panou
+DISPLAY_NAV_TUNNEL
+	Afişare tunel de navigaţie
 LANGUAGE_SELECTION
     Limba (reporniţi jocul ca să se aplice)
  
@@ -344,7 +355,9 @@ ECM_ADVANCED
 ECM_ADVANCED_DESCRIPTION
     Un sistem de contramăsuri electronice defensive împotriva rachetelor, capabile să distrugă câteva tipuri mai avansate de rachete autoghidate.
 SHIELD_GENERATOR
-    Generator de scut
+    Generator de Scut
+X_SHIELD_GENERATORS
+    %quantity Generatoare de Scut
 SHIELD_GENERATOR_DESCRIPTION
     Oferă apărare adiţională fuzelajului navei per unitate instalată.
 LASER_COOLING_BOOSTER
@@ -367,6 +380,10 @@ FUEL_SCOOP
     Colector Combustibil
 FUEL_SCOOP_DESCRIPTION
     Permite colectarea combustibilului de hidrogen de pe planetele gigantice de gaz.
+CARGO_SCOOP
+    Colector Marfă
+CARGO_SCOOP_DESCRIPTION
+    Permite colectarea cutiilor cu marfă din spaţiu.
 HYPERCLOUD_ANALYZER
     Analizator Hipernor
 HYPERCLOUD_ANALYZER_DESCRIPTION
@@ -449,6 +466,8 @@ CARGO_INVENTORY
     Inventar depozit:
 JETTISON
     Aruncă în spaţiu
+REFUEL
+    Realimentează
 JETTISONED_1T_OF_X
     Aţi aruncat în spaţiu 1 tonă de %commodity
 COMBAT_RATING
@@ -513,8 +532,6 @@ FIRE_LASER
     Trage cu laser-ul
 SHIP_ORIENTATION
     Orientare navă
-FAST_ROTATION_CONTROL
-    Control rotaţional rapid
 PITCH_UP
     Înclinare în sus
 PITCH_DOWN
@@ -541,12 +558,26 @@ THRUSTER_PORT
     Propulsare la stânga
 THRUSTER_STARBOARD
     Propulsare la dreapta
+USE_LOW_THRUST
+    Folosiţi viteza de croazieră
 SPEED_CONTROL_MODE
     Mod de control al vitezei
 INCREASE_SET_SPEED
     Creşte viteza setată
 DECREASE_SET_SPEED
     Scade viteza setată
+SCANNER_CONTROL
+	Control scanare
+TOGGLE_SCAN_MODE
+	Comutare mod scanare
+INCREASE_SCAN_RANGE
+	Creşte aria de scanare
+DECREASE_SCAN_RANGE
+	Scade aria de scanare
+TOGGLE_LUA_CONSOLE
+    Comutare consola Lua
+TOGGLE_HUD_MODE
+    Comutare mod panou
 JOYSTICK_INPUT
     Intrare joystick
 PITCH
@@ -582,7 +613,9 @@ TOMBSTONE_EPITAPH
 MM_START_NEW_GAME_EARTH
     Joc nou pornind de pe Pamânt
 MM_START_NEW_GAME_E_ERIDANI
-    Joc nou pornind pe Epsilon Eridani
+    Joc nou pornind de pe Epsilon Eridani
+MM_START_NEW_GAME_LAVE
+    Joc nou pornind de pe Lave
 MM_START_NEW_GAME_DEBUG
     Joc nou pornind la punctul de test
 MM_LOAD_SAVED_GAME
@@ -683,6 +716,8 @@ NOT_FOUND
     Nu a fost găsit
 NUMBER_HOURS
     %hours{f.1} ore
+NUMBER_DAYS
+    %days{f.0} zile
 QUADRUPLE_SYSTEM
     Sistem cuadruplu
 TRIPLE_SYSTEM
@@ -695,6 +730,8 @@ DISABLED_AUTOMATIC_SYSTEM_SELECTION
     S-a dezactivat selecţia automată a sistemelor.
 FUEL_SCOOP_ACTIVE_N_TONNES_H_COLLECTED
     Colector combustibil activ. Acum aveţi %quantity tone de hidrogen.
+CARGO_SCOOP_ACTIVE_1_TONNE_X_COLLECTED
+    Colector marfă activ. Aţi colectat o tonă de %item.
 CARGO_BAY_LIFE_SUPPORT_LOST
     Senzorii raportează condiţii critice la sistemele de susţinere a vieţii in depozit.
 NO_FREE_SPACE_FOR_ITEM
@@ -709,6 +746,8 @@ REAR_VIEW
     Vedere posterioară
 EXTERNAL_VIEW
     Vedere exterioară
+SIDEREAL_VIEW
+    Vedere siderală
 NAVIGATION_STAR_MAPS
     Navigare şi hărţi stelare
 COMMS
@@ -923,6 +962,8 @@ SOLAR
     Solar
 EARTH
     Pământ
+SURFACE_GRAVITY
+    Gravitaţia la suprafaţă
 SURFACE_TEMPERATURE
     Temperatura la suprafaţă
 N_CELSIUS
@@ -1017,6 +1058,10 @@ OBJECT_LABELS_ARE_ON
     Capturile obiectelor activate
 OBJECT_LABELS_ARE_OFF
     Capturile obiectelor dezactivate
+SELECT_LOW_THRUST_POWER_LEVEL
+    Selectaţi nivelul vitezei de croazieră
+SET_LOW_THRUST_POWER_LEVEL_TO_X_PERCENT
+    Setaţi viteza de croazieră la %power%%
 HYPERSPACE_JUMP
     Salt în hiperstaţiu
 TAKEOFF
@@ -1025,6 +1070,8 @@ MANUAL_CONTROL
     Control manual
 COMPUTER_SPEED_CONTROL
     Viteză controlată de calculator
+COMPUTER_HEADING_CONTROL
+    Direcţie controlată de calculator
 AUTOPILOT_ON
     Autopilot activ
 SHIP_VELOCITY_BY_REFERENCE_OBJECT
@@ -1043,6 +1090,8 @@ HULL_INTEGRITY
     Consistenţă fuzelaj
 SHIELD_INTEGRITY
     Consistenţă scut
+FUEL
+    Combustibil
 LAUNCH_PERMISSION_DENIED_BUSY
     Nu vi se acordă permisiunea de a decola: staţiile sunt aglomerate.
 HYPERSPACE_JUMP_ABORTED
@@ -1055,6 +1104,10 @@ DOCKED
     Andocat
 HYPERSPACE
     Hiperspaţiu
+HEADING_LOCK_FORWARD
+    Direcţie setată (prova)
+HEADING_LOCK_BACKWARD
+    Heading Lock (pupa)
 SET_SPEED_KM_S
     Viteza setată: %speed{f.2} km/s
 SET_SPEED_M_S
@@ -1065,8 +1118,12 @@ M_S_RELATIVE_TO
     %speed{f.0} m/s relativ la %frame
 N_DISTANCE_TO_TARGET
     %distance până la ţintă
+IN_TRANSIT
+    În tranzit
 IN_TRANSIT_TO_N_X_X_X
     În tranzit către %system [%x,%y,%z]
+PROBABILITY_OF_ARRIVAL_X_PERCENT
+    Probabilitatea sosirii: %probability%%
 ALT_IN_METRES
     Alt: %altitude{f.0}m
 PRESSURE_N_BAR
@@ -1127,3 +1184,17 @@ ACTIVE
     Activ
 DISTANCE_LY
     Distanţa: %distance{f.2} al
+SYSTEM
+    Sistem
+UNOCCUPIED_CABIN
+    Cabine Extra pentru Pasageri
+X_UNOCCUPIED_CABINS
+    %quantity Cabine Extra pentru Pasageri
+UNOCCUPIED_CABIN_DESCRIPTION
+    Necesară pentru transportul unui singur pasager
+PASSENGER_CABIN
+    Cabină pentru Pasageri Ocupată
+X_PASSENGER_CABINS
+    %quantity Cabine pentru Pasageri Ocupate
+CABINS
+    Cabine
