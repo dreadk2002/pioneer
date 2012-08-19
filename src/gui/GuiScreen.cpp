@@ -87,7 +87,7 @@ void Screen::ShowBadError(const char *msg)
 	Gui::Screen::AddBaseWidget(f, GetWidth()/8, GetHeight()/8);
 	f->SetTransparency(false);
 	f->SetBgColor(0.4f,0,0,1.0f);
-	f->Add(new Gui::Label(msg), 10, 10);
+	f->Add(new Gui::Label(msg, TextLayout::ColourMarkupNone), 10, 10);
 
 	Gui::Button *okButton = new Gui::LabelButton(new Gui::Label("Ok"));
 	okButton->SetShortcut(SDLK_RETURN, KMOD_NONE);
@@ -120,7 +120,7 @@ void Screen::EnterOrtho()
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
@@ -131,7 +131,7 @@ void Screen::EnterOrtho()
 }
 
 void Screen::LeaveOrtho()
-{	
+{
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -162,7 +162,7 @@ void Screen::RemoveBaseWidget(Widget *w)
 {
 	baseContainer->Remove(w);
 }
-	
+
 void Screen::SDLEventCoordToScreenCoord(int sdlev_x, int sdlev_y, float *x, float *y)
 {
 	*y = sdlev_y*height*invRealHeight;
@@ -224,6 +224,13 @@ float Screen::GetFontHeight(Text::TextureFont *font)
     if (!font) font = GetFont().Get();
 
 	return font->GetHeight() * fontScale[1];
+}
+
+float Screen::GetFontDescender(Text::TextureFont *font)
+{
+    if (!font) font = GetFont().Get();
+
+	return font->GetDescender() * fontScale[1];
 }
 
 void Screen::MeasureString(const std::string &s, float &w, float &h, Text::TextureFont *font)

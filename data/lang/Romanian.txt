@@ -256,7 +256,7 @@ DISPLAY_NAV_TUNNEL
 	Afişare tunel de navigaţie
 LANGUAGE_SELECTION
     Limba (reporniţi jocul ca să se aplice)
- 
+
 # Wares
 NONE
     Nimic
@@ -328,7 +328,7 @@ RUBBISH
     Gunoi
 RADIOACTIVES
     Deşeuri radioactive
- 
+
 # Hardware
 MISSILE_UNGUIDED
     Racheta nedirijată R40
@@ -596,7 +596,7 @@ POOR
     Slabuţ
 AVERAGE
     Mediocru
-ABOVE_AVERAGE 
+ABOVE_AVERAGE
     Peste medie
 COMPETENT
     Competent
@@ -1047,7 +1047,7 @@ RADIUS
 SEMI_MAJOR_AXIS
     Axă semi-majoră
 TIME_POINT
-    Punctul în timp: 
+    Punctul în timp:
 UNEXPLORED_SYSTEM_NO_SYSTEM_VIEW
     Sistem neexplorat. Vizualizarea sistemului indisponibilă.
 WHEELS_ARE_UP
@@ -1126,8 +1126,8 @@ PROBABILITY_OF_ARRIVAL_X_PERCENT
     Probabilitatea sosirii: %probability%%
 ALT_IN_METRES
     Alt: %altitude{f.0}m
-PRESSURE_N_BAR
-    P: %pressure{f.2} bar
+PRESSURE_N_ATMOSPHERES
+    P: %pressure{f.2} atm
 NO_HYPERDRIVE
     Niciun motor superluminic
 MASS_N_TONNES

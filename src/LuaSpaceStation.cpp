@@ -158,7 +158,7 @@ static int l_spacestation_add_advert(lua_State *l)
 
 	lua_pushinteger(l, ref);
 	return 1;
-} 
+}
 
 /*
  * Method: RemoveAdvert
@@ -197,7 +197,7 @@ static int l_spacestation_remove_advert(lua_State *l)
 		lua_pop(l, 1);
 		return 0;
 	}
-	
+
 	lua_pushinteger(l, ref);
 	lua_gettable(l, -2);
 	if (lua_isnil(l, -1)) {
@@ -224,7 +224,7 @@ static int l_spacestation_remove_advert(lua_State *l)
 	LUA_DEBUG_END(l,0);
 
 	return 0;
-} 
+}
 
 /*
  * Method: GetEquipmentPrice
@@ -278,11 +278,6 @@ static int l_spacestation_attr_num_docks(lua_State *l)
 	return 1;
 }
 
-static bool promotion_test(DeleteEmitter *o)
-{
-	return dynamic_cast<SpaceStation*>(o);
-}
-
 template <> const char *LuaObject<SpaceStation>::s_type = "SpaceStation";
 
 template <> void LuaObject<SpaceStation>::RegisterClass()
@@ -305,5 +300,5 @@ template <> void LuaObject<SpaceStation>::RegisterClass()
 	};
 
 	LuaObjectBase::CreateClass(s_type, l_parent, l_methods, l_attrs, NULL);
-	LuaObjectBase::RegisterPromotion(l_parent, s_type, promotion_test);
+	LuaObjectBase::RegisterPromotion(l_parent, s_type, LuaObject<SpaceStation>::DynamicCastPromotionTest);
 }

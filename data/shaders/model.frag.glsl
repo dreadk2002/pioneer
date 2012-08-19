@@ -23,7 +23,7 @@ void main(void)
 	if ( useglow )
 		emission = texture2D(texGlow, gl_TexCoord[0].st);
 
-	gl_FragColor = 
+	gl_FragColor =
 		gl_LightModel.ambient * gl_FrontMaterial.ambient +
 		amb * gl_FrontMaterial.ambient +
 		diff * gl_FrontMaterial.diffuse +
@@ -34,7 +34,5 @@ void main(void)
 	if ( usetex )
 		gl_FragColor *= texture2D(tex, gl_TexCoord[0].st);
 
-#ifdef ZHACK
-	SetFragDepth(gl_TexCoord[6].z);
-#endif
+	SetFragDepth();
 }

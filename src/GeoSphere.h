@@ -8,7 +8,6 @@
 #include "terrain/Terrain.h"
 
 extern int GEOPATCH_EDGELEN;
-#define ATMOSPHERE_RADIUS 1.015
 
 namespace Graphics { class Renderer; }
 class SystemBody;
@@ -55,7 +54,7 @@ private:
 	SDL_mutex *m_vbosToDestroyLock;
 	void AddVBOToDestroy(GLuint vbo);
 	void DestroyVBOs();
-	
+
 	vector3d m_tempCampos;
 
 	SDL_mutex *m_updateLock;
